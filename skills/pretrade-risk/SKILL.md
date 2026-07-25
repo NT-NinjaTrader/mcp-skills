@@ -8,23 +8,15 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-This skill turns "I want to buy ES" into a sized, bracketed,
-risk-budgeted proposal. It uses two scripts and one reference. It
-never emits order payloads. It always leaves the place/modify
-decision to the user.
+This skill turns "I want to buy ES" into a sized, bracketed, risk-budgeted proposal. It uses two scripts and one reference. It never emits order payloads. It always leaves the place/modify decision to the user.
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers. Account names are
-unique to one server. Once the workflow resolves an account on a
-server, every downstream call — `my_portfolio`, `market_snapshot`,
-`place_order`, `create_alert`, history tools, etc. — must go through
-that same server. Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once the workflow resolves an account on a server, keep every downstream call on that same server. The rule covers `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, the history tools, and any other tool. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `my_portfolio` — netLiq, existing position, and pending order qty.
   Prune with `fields=["account.netLiq","positions[].symbol","positions[].netPos","workingOrders[].symbol","workingOrders[].action","workingOrders[].quantity"]`.
@@ -41,9 +33,7 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ### 1. Resolve the symbol (if needed)
 
-If the user gave a bare product code ("ES"), resolve it with the
-`contract-intel` skill first. This skill expects a specific contract
-symbol (like `ESU6`) downstream.
+If the user gave a bare product code ("ES"), resolve it with the `contract-intel` skill first. This skill expects a specific contract symbol (like `ESU6`) downstream.
 
 ### 2. Gather inputs
 
@@ -60,8 +50,7 @@ Call these MCP tools in parallel where possible:
   per-order contract-count cap — source that limit from
   `estimate_order`'s pre-trade validation instead.
 
-Also run `market-context`'s `atr.py` on recent bars of the symbol to
-get the ATR in points. Default is Daily bars, 14-period ATR.
+Also run `market-context`'s `atr.py` on recent bars of the symbol to get the ATR in points. Default is Daily bars, 14-period ATR.
 
 ### 3. Size the trade
 
@@ -82,18 +71,9 @@ Output fields used downstream:
 - `stop_distance_points` → pass to `bracket.py --stop-distance-points`
 - `flags[]` → narrate to the user. See `references/risk-rules.md`
 
-**Always pass `--existing-pending-qty` when non-zero** so sizing
-matches the server-side pre-trade risk check that will evaluate the
-order. See `references/risk-rules.md` § pending-qty rule.
+**Always pass `--existing-pending-qty` when non-zero** so sizing matches the server-side pre-trade risk check that will evaluate the order. See `references/risk-rules.md` § pending-qty rule.
 
-If `proposed_qty == 0` and flag is `stop_too_wide_for_risk_budget`:
-the contract is too large for the risk budget at this stop distance.
-Options are: use a micro (consult `contract-intel` for the fungible
-sibling), tighten the stop, or raise `--risk-pct` with explicit user
-intent. **A zero-qty answer does not skip step 5.** Run the
-feasibility gate on the alternative you propose, or on a qty=1 probe
-of the requested contract. This way, the server's verdict backs the
-honest answer.
+If `proposed_qty == 0` and flag is `stop_too_wide_for_risk_budget`: the contract is too large for the risk budget at this stop distance. Options are: use a micro (consult `contract-intel` for the fungible sibling), tighten the stop, or raise `--risk-pct` with explicit user intent. **A zero-qty answer does not skip step 5.** Run the feasibility gate on the alternative you propose. If you have no alternative, run the gate on a qty=1 probe of the requested contract. This way, the server's verdict backs the honest answer.
 
 ### 4. Propose a bracket
 
@@ -108,24 +88,13 @@ python3 scripts/bracket.py \
     --value-per-point 50
 ```
 
-`bracket.py` snaps prices to the tick grid. Output gives stop_price,
-target_price, and dollar-risk/payoff. A `payoff_risk_ratio < 1.5` is
-a yellow flag. You could tighten the target or widen the stop, for
-fewer but better trades.
+`bracket.py` snaps prices to the tick grid. Output gives stop_price, target_price, and dollar-risk/payoff. A `payoff_risk_ratio < 1.5` is a yellow flag. You could tighten the target or widen the stop, for fewer but better trades.
 
-**The user chooses the R-multiple.** The default in examples is 2.0
-for illustration. Real invocations should use the target multiple
-the user actually wants. The skill does not recommend a specific
-R-multiple. It computes the bracket prices for whatever the user
-asks for.
+**The user chooses the R-multiple.** The default in examples is 2.0 for illustration. Real invocations should use the target multiple the user actually wants. The skill does not recommend a specific R-multiple. It computes the bracket prices for whatever the user asks for.
 
 #### 4a. Translating bracket.py output to `place_order` — SIGNED DELTAS, not absolute prices
 
-`bracket.py` emits **absolute** `stop_price` and `target_price`. The
-`place_order` `brackets[]` field expects **signed deltas added to the
-entry working price** in contract-native points. Both legs compute
-`entryPrice + delta` server-side, with **no Buy/Sell sign-flip**.
-`describe(topic='place_order_examples')` confirms this.
+`bracket.py` emits **absolute** `stop_price` and `target_price`. The `place_order` `brackets[]` field expects **signed deltas added to the entry working price** in contract-native points. Both legs compute `entryPrice + delta` server-side, with **no Buy/Sell sign-flip**. `describe(topic='place_order_examples')` confirms this.
 
 **Convert before submitting:**
 
@@ -153,29 +122,15 @@ brackets: [{ "qty": 1, "profitTarget":  208, "stopLoss": -176 }]
 brackets: [{ "qty": 1, "profitTarget": -208, "stopLoss":  176 }]
 ```
 
-The `describe(topic='place_order_examples')` text says "positive
-profitTarget = better, negative stopLoss = worse". That framing is
-correct only for longs. For shorts the signs invert because "better"
-(target) is below entry and "worse" (stop) is above. Do not
-paraphrase "positive = better". Reason from the trade direction.
+The `describe(topic='place_order_examples')` text says "positive profitTarget = better, negative stopLoss = worse". That framing is correct only for longs. For shorts the signs invert because "better" (target) is below entry and "worse" (stop) is above. Do not paraphrase "positive = better". Reason from the trade direction.
 
-**Failure mode if you forget:** If you send absolute prices (e.g.
-`profitTarget: 7458, stopLoss: 7074` on a long at 7250), both legs
-anchor at `entry + absolute`. The target then lands at ~14708,
-working but unreachable. The stop lands at ~14324, above entry on a
-long, so the server rejects it. The user ends up with a fill and
-**no stop loss**. Always convert.
+**Failure mode if you forget:** If you send absolute prices, both legs anchor at `entry + absolute`. An example is `profitTarget: 7458, stopLoss: 7074` on a long at 7250. The target then lands at ~14708, working but unreachable. The stop lands at ~14324, above entry on a long, so the server rejects it. The user ends up with a fill and **no stop loss**. Always convert.
 
-The fill price can also differ from your limit. Better-side fills
-are common. The system applies the offsets to the actual fill, so
-the absolute bracket prices auto-anchor correctly without
-recomputation.
+The fill price can also differ from your limit. Better-side fills are common. The system applies the offsets to the actual fill, so the absolute bracket prices auto-anchor correctly without recomputation.
 
 ### 5. Final feasibility gate — never skip
 
-Always end with `estimate_order`. The server's pre-trade risk check
-is the authoritative answer. It is read-only and never places an
-order, so there is no reason to omit it:
+Always end with `estimate_order`. The server's pre-trade risk check is the authoritative answer. It is read-only and never places an order, so there is no reason to omit it:
 
 ```
 estimate_order(
@@ -184,8 +139,7 @@ estimate_order(
 )
 ```
 
-This step runs in **every** workflow outcome, and the answer must
-cite its verdict:
+This step runs in **every** workflow outcome, and the answer must cite its verdict:
 
 - **Sizing produced a qty** → gate that qty on the requested symbol.
 - **Honest zero** (`proposed_qty == 0`) with a micro alternative →
@@ -196,34 +150,17 @@ cite its verdict:
   e.g. a futures max-order-quantity of 0 or `MaxPosLimitReached` —
   instead of resting the answer on arithmetic alone.
 
-If `feasible: false`, report the reason to the user. Do not propose
-workarounds automatically. The server said no.
+If `feasible: false`, report the reason to the user. Do not propose workarounds automatically. The server said no.
 
-**`MaxPosLimitReached` is dynamic, per-contract, and includes pending
-working orders.** Two distinct sources fire under the same name:
-(a) the account's contract whitelist excludes the contract or the
-product, or (b) the per-product hypothetical post-fill position
-(`hypoLong` / `hypoShort` / `hypoExposed`) exceeds the limit once the
-count includes in-flight working orders. The user might have recent
-in-flight churn, such as just-cancelled bracket legs or just-modified
-working orders. In that case, the hypothetical count can run
-temporarily high, and a single retry after the working-order state
-settles is legitimate. If the rejection persists, it is a real
-account-config gate. Defer to the user to adjust it through Account
-Settings. Never silently work around it.
+**`MaxPosLimitReached` is dynamic, per-contract, and includes pending working orders.** Two distinct sources fire under the same name. Source (a) is the account's contract whitelist: it excludes the contract or the product. Source (b) is the per-product hypothetical post-fill position (`hypoLong` / `hypoShort` / `hypoExposed`). It exceeds the limit once the count includes in-flight working orders. The user might have recent in-flight churn, such as just-cancelled bracket legs or just-modified working orders. In that case, the hypothetical count can run temporarily high. After the working-order state settles, a single retry is legitimate. If the rejection persists, it is a real account-config gate. Defer to the user to adjust it through Account Settings. Never silently work around it.
 
 ### 6. Alert-proposal hook (optional)
 
-Once the user approves the bracket, emit complementary alert
-expressions for the user to submit via `alerts-composer`. See
-`references/risk-rules.md`, section Alert-proposal hook, for
-templates. Typical examples are a breakeven-trip alert and a
-target-approach alert.
+Once the user approves the bracket, emit complementary alert expressions for the user to submit via `alerts-composer`. See `references/risk-rules.md`, section Alert-proposal hook, for templates. Typical examples are a breakeven-trip alert and a target-approach alert.
 
 ## Output idioms
 
-Lead with the qty and dollar risk. Include the R:R ratio. Mention
-ATR for context. Example narration:
+Lead with the qty and dollar risk. Include the R:R ratio. Mention ATR for context. Example narration:
 
 > "4 ES long at 7150 with a 12-point stop (~1.5×ATR of 8): $2,400 at
 > risk, 360% of your daily $500 budget — the trade is too big for

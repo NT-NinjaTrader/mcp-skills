@@ -1,11 +1,8 @@
 # Hedge patterns — common cross-asset priors
 
-Reference ranges for typical cross-underlying correlations in US futures.
-Use these as priors when the user asks "is X correlated with Y?", before you pull live data.
-Then confirm with `correlation.py`.
+Reference ranges for typical cross-underlying correlations in US futures. Use these as priors when the user asks "is X correlated with Y?", before you pull live data. Then confirm with `correlation.py`.
 
-**All numbers are rough priors.** Correlations drift with regime.
-Always validate with a recent-history run.
+**All numbers are rough priors.** Correlations drift with regime. Always validate with a recent-history run.
 
 ## Table of contents
 
@@ -21,9 +18,7 @@ Always validate with a recent-history run.
 
 ## 1. Equity-index family
 
-All four US equity-index futures are tightly coupled in normal
-regimes. Correlation is highest within size brackets (ES+NQ large-
-cap, RTY+YM divergence).
+All four US equity-index futures are tightly coupled in normal regimes. Correlation is highest within size brackets (ES+NQ large-cap, RTY+YM divergence).
 
 | Pair | Typical r | β (B on A, log-rtn) | Notes |
 |------|-----------|---------------------|-------|
@@ -32,16 +27,13 @@ cap, RTY+YM divergence).
 | ES ↔ RTY | 0.70 – 0.88 | 0.9 – 1.4 | Small-cap decoupling in risk-off |
 | NQ ↔ RTY | 0.60 – 0.80 | 0.7 – 1.1 | Growth vs small-cap dispersion |
 
-**When correlation tightens (>0.9 rolling)**: index-level macro move;
-hedging one with another is effective.
+**When correlation tightens (>0.9 rolling)**: index-level macro move; hedging one with another is effective.
 
-**When correlation loosens (<0.6)**: sector rotation in progress;
-single-index exposure does not equal broad-market exposure.
+**When correlation loosens (<0.6)**: sector rotation in progress; single-index exposure does not equal broad-market exposure.
 
 ## 2. Energy complex
 
-Looser than equity-index. Crude oil + refined products are tight,
-but crude vs natural gas is structurally weak.
+Looser than equity-index. Crude oil + refined products are tight, but crude vs natural gas is structurally weak.
 
 | Pair | Typical r | Notes |
 |------|-----------|-------|
@@ -60,8 +52,7 @@ but crude vs natural gas is structurally weak.
 
 ## 4. Bonds
 
-Tightly correlated across the curve. Differences are duration and
-steepening trades.
+Tightly correlated across the curve. Differences are duration and steepening trades.
 
 | Pair | Typical r | Notes |
 |------|-----------|-------|

@@ -1,7 +1,6 @@
 # Session schedules — US futures markets
 
-All times are ET (America/New_York).
-The clock itself handles daylight savings — the hours below are local clock time.
+All times are ET (America/New_York). The clock itself handles daylight savings — the hours below are local clock time.
 
 ## CME equity indexes (ES, NQ, YM, RTY + micros)
 
@@ -52,8 +51,7 @@ The clock itself handles daylight savings — the hours below are local clock ti
 
 ## CBOT bonds (ZB, ZN, ZF, ZT, UB)
 
-Follow equity-index hours for most purposes. Largest vol spike around
-08:30 ET releases (CPI, NFP, Retail Sales, etc.).
+Follow equity-index hours for most purposes. Largest vol spike around 08:30 ET releases (CPI, NFP, Retail Sales, etc.).
 
 ## FX futures (6E, 6B, 6J, 6A + micros)
 
@@ -66,8 +64,7 @@ Near-continuous, but activity tracks underlying spot-market hours:
 
 ## High-volatility boundaries to flag on ask
 
-When the user asks a vol/exposure question, check if *now* is near any
-of these — this skill doesn't proactively warn:
+This skill does not proactively warn. When the user asks a vol/exposure question, check if *now* is near any of these:
 
 - **08:30 ET** — US economic releases (CPI, NFP, Retail Sales, PPI, GDP)
 - **09:30 ET** — NY cash open (indexes)

@@ -8,22 +8,15 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-Answer deep questions about ONE closed trade, or a small set of
-them. Where did the trade peak? How close did MAE come to the stop?
-What do four alternate exit rules return, on the same bar window?
+Answer deep questions about ONE closed trade, or a small set of them. Where did the trade peak? How close did MAE come to the stop? What do four alternate exit rules return, on the same bar window?
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers.
-Account names are unique to one server.
-Once a workflow resolves an account on a server, every downstream call must go through that same server.
-This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc.
-Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once a workflow resolves an account on a server, every downstream call must go through that same server. This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `position_history` — closed-position pairs
   with entry/exit prices and times
@@ -45,8 +38,7 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ### 1. Identify the trade
 
-The user names a trade by date/time/symbol or picks from a recent
-list. Resolve via `position_history`:
+The user names a trade by date/time/symbol or picks from a recent list. Resolve via `position_history`:
 
 ```
 position_history(
@@ -56,19 +48,11 @@ position_history(
 )
 ```
 
-(`startDate` and `endDate` are date-level. They use `YYYY-MM-DD` or
-a natural term like `"yesterday"`, never a timestamp.)
+(`startDate` and `endDate` are date-level. They use `YYYY-MM-DD` or a natural term like `"yesterday"`, never a timestamp.)
 
-Take `avgBuyPrice` / `avgSellPrice` (or `buyPrice` / `sellPrice`),
-`boughtTimestamp` / `soldTimestamp`, `pairedQty`, `symbol` — derive
-direction from the sign of `netPos`. Fetch contract specs via
-`search_contracts` for `tickSize` + `valuePerPoint`.
+Take `avgBuyPrice` / `avgSellPrice` (or `buyPrice` / `sellPrice`), `boughtTimestamp` / `soldTimestamp`, `pairedQty`, `symbol` — derive direction from the sign of `netPos`. Fetch contract specs via `search_contracts` for `tickSize` + `valuePerPoint`.
 
-The caller must also know `planned_stop_points` — the stop distance
-the user chose at trade entry. **This value denominates the
-R-multiple outputs and `adverse_used_pct_of_stop`. A wrong guess
-silently mis-scales every counterfactual.** Source options, in order
-of preference:
+The caller must also know `planned_stop_points` — the stop distance the user chose at trade entry. **This value denominates the R-multiple outputs and `adverse_used_pct_of_stop`. A wrong guess silently mis-scales every counterfactual.** Source options, in order of preference:
 
 1. Conversation context — the user told you when they opened the
    trade.
@@ -80,17 +64,7 @@ of preference:
    to give one.
    Flag every output with "reconstructed stop — R-values are approximate", so the user reads them as such.
 
-**Descriptive asks do not block on the stop value.**
-For purely descriptive questions, such as "how far did it go my way / against me?" or MFE/MAE, run the replay immediately, without
-`planned_stop_points`.
-`excursion.py` handles its absence and emits null R-fields.
-Report excursion in points and dollars.
-Note "no stop distance on record — R-multiples omitted".
-Offer to recompute in R,
-if the user supplies the stop.
-Only R-denominated outputs and
-stop-referencing counterfactuals, such as `breakeven_after`,
-`atr_trail`, and R-targets, need a value up front.
+**Descriptive asks do not block on the stop value.** A descriptive ask is a question such as "how far did it go my way / against me?" or MFE/MAE. For such an ask, run the replay immediately, without `planned_stop_points`. `excursion.py` handles its absence and emits null R-fields. Report excursion in points and dollars. Note "no stop distance on record — R-multiples omitted". Offer to recompute in R, if the user supplies the stop. Only R-denominated outputs and stop-referencing counterfactuals, such as `breakeven_after`, `atr_trail`, and R-targets, need a value up front.
 
 ### 2. Fetch bars covering the trade + a lookback
 
@@ -104,17 +78,13 @@ market_history(
 )
 ```
 
-(`from` requires `to`.
-If you pass only one, it errors.)
+(`from` requires `to`. If you pass only one, it errors.)
 
-The 15-min post-exit buffer lets counterfactuals explore "what if I'd held longer",
-so the bar scan does not run out of data.
+The 15-min post-exit buffer lets counterfactuals explore "what if I'd held longer", so the bar scan does not run out of data.
 
 ### 3. Compute excursion + derived metrics
 
-Save the trade-with-bars payload to a file.
-Pass its path with `--file`.
-Never re-type or inline a large JSON payload in the command.
+Save the trade-with-bars payload to a file. Pass its path with `--file`. Never re-type or inline a large JSON payload in the command.
 
 ```bash
 python3 scripts/excursion.py --file trade_with_bars.json
@@ -131,8 +101,7 @@ Output fields:
 
 ### 4. Run counterfactual(s)
 
-Choose a scenario based on user intent. See
-`references/replay-patterns.md` for the catalog:
+Choose a scenario based on user intent. See `references/replay-patterns.md` for the catalog:
 
 | User phrasing | Script invocation |
 |---------------|-------------------|
@@ -150,9 +119,7 @@ Each run produces:
 
 ### 5. Multiple scenarios — sequential compare
 
-For "which rule would have won?" questions, run each scenario in
-sequence. Rank the results by `vs_actual.delta_dollars`. There is no
-`batch.py` script. Just call `whatif.py` N times in the workflow:
+For "which rule would have won?" questions, run each scenario in sequence. Rank the results by `vs_actual.delta_dollars`. There is no `batch.py` script. Just call `whatif.py` N times in the workflow:
 
 ```bash
 for spec in \
@@ -166,9 +133,7 @@ done
 
 ### 6. Narrate — with survivorship caveat if prescriptive
 
-When the user's question implies a rule they might adopt ("should I
-start using 2R targets?"), include the survivorship caveat from
-`references/survivorship-caveat.md`:
+When the user's question implies a rule they might adopt ("should I start using 2R targets?"), include the survivorship caveat from `references/survivorship-caveat.md`:
 
 > "One-trade counterfactual. For a rule-level evaluation across your
 > book, route through `trade-debrief`."

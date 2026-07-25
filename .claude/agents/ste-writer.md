@@ -4,24 +4,13 @@ description: Rewrite or review prose to strict ASD-STE100 Simplified Technical E
 tools: Read, Edit, Write, Bash, Grep
 ---
 
-You rewrite prose to strict ASD-STE100 Simplified Technical
-English. You work on model-facing markdown files and code comments
-in this repo.
+You rewrite prose to strict ASD-STE100 Simplified Technical English. You work on model-facing markdown files and code comments in this repo.
 
 ## Refuse README.md
 
-Never rewrite `README.md`, and never rewrite any file named
-`README.md` in any directory. That file is human-facing prose. It
-follows the ordinary technical-writing rules in `AGENTS.md`
-§ Writing style: README.md, which contradict the rules below: a
-README reflows paragraphs, allows an `-ing` form, allows a
-contraction, and sets no sentence-length cap.
-`scripts/ste-lint.py` already skips a README, and
-`scripts/readme-reflow-lint.py` gates it instead.
+Never rewrite `README.md`, and never rewrite any file named `README.md` in any directory. That file is human-facing prose. It follows the ordinary technical-writing rules in `AGENTS.md` § Writing style: README.md. Those rules contradict the rules below. A README allows an `-ing` form and a contraction, and it sets no sentence-length cap. `scripts/ste-lint.py` already skips a README, and `scripts/readme-reflow-lint.py` gates it instead.
 
-If a task asks you to rewrite a README, stop. Report that the file
-uses the other register, and name `AGENTS.md` § Writing style:
-README.md. Do not edit it.
+If a task asks you to rewrite a README, stop. Report that the file uses the other register, and name `AGENTS.md` § Writing style: README.md. Do not edit it.
 
 ## Rules
 
@@ -79,6 +68,4 @@ Run these checks after a rewrite:
 
 ## Note
 
-A Claude Code session in this repo can dispatch this agent by name.
-A process that cannot dispatch this agent must read this file
-instead. It must then follow the procedure above.
+A Claude Code session in this repo can dispatch this agent by name. A process that cannot dispatch this agent must read this file instead. It must then follow the procedure above.

@@ -17,21 +17,15 @@ Summarize what happened across closed trades. Three outputs:
    One fill runs per invocation, because the script fetches bars
    around that fill.
 
-This skill is descriptive only. For "what should I change", use
-`trade-debrief`.
+This skill is descriptive only. For "what should I change", use `trade-debrief`.
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers.
-Account names are unique to one server.
-Once a workflow resolves an account on a server, every downstream call must go through that same server.
-This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc.
-Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once a workflow resolves an account on a server, every downstream call must go through that same server. This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `fill_history` — per-fill times, prices, and quantities.
 - `performance_summary` — pre-aggregated win rate, profit factor,
@@ -52,11 +46,7 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ## Workflow
 
-**Account resolution.** Every history call below requires
-`account=<name>`. If the account name is not in the conversation
-context, call `user_profile()` first. Its response's
-`accounts[].name` field lists every account on this MCP server. Pass
-that name as `account=` on every later call.
+**Account resolution.** Every history call below requires `account=<name>`. If the account name is not in the conversation context, call `user_profile()` first. Its response's `accounts[].name` field lists every account on this MCP server. Pass that name as `account=` on every later call.
 
 ### 1. Day/week summary — "how did I trade today?"
 
@@ -64,16 +54,9 @@ that name as `account=` on every later call.
 fill_history(account=<acct>, startDate=<YYYY-MM-DD or "today">, endDate=<YYYY-MM-DD>)
 ```
 
-`startDate`/`endDate` are date-level. They use `YYYY-MM-DD` or a
-natural term like `"today"` or `"this week"`, never a timestamp.
-`format="columns"` cuts multi-day responses by about 40-60% on result
-sets over 50 fills. See `describe(topic='response_format')`.
+`startDate`/`endDate` are date-level. They use `YYYY-MM-DD` or a natural term like `"today"` or `"this week"`, never a timestamp. `format="columns"` cuts multi-day responses by about 40-60% on result sets over 50 fills. See `describe(topic='response_format')`.
 
-To get P&L in dollars, run `streaks.py` with a per-product
-value-per-point.
-Save the `fill_history` result to a file.
-Pass its path with `--file`.
-Never re-type or inline a large JSON payload in the command.
+To get P&L in dollars, run `streaks.py` with a per-product value-per-point. Save the `fill_history` result to a file. Pass its path with `--file`. Never re-type or inline a large JSON payload in the command.
 
 ```bash
 python3 scripts/streaks.py --file fill_history.json \
@@ -93,13 +76,9 @@ Output fields consumed downstream:
 
 ### 2. Single-fill slippage — "what was the slippage on that ES fill?"
 
-Only run this when the user names a specific fill or a small set. It
-is expensive: one `market_history` call runs per fill.
+Only run this when the user names a specific fill or a small set. It is expensive: one `market_history` call runs per fill.
 
-Fetch bars around the fill. Two minutes before and two minutes after
-is enough for the arrival mid (the bar that contains the
-order-submit time) and the interval VWAP (default ±60s around the
-fill):
+Fetch bars around the fill. Two minutes before and two minutes after is enough. This window covers the arrival mid and the interval VWAP. The arrival mid comes from the bar that contains the order-submit time. The interval VWAP defaults to ±60s around the fill:
 
 ```
 market_history(
@@ -111,12 +90,9 @@ market_history(
 )
 ```
 
-(One-minute bars are the finest time granularity. There is no
-30-second bar. `from` requires `to`.)
+(One-minute bars are the finest time granularity. There is no 30-second bar. `from` requires `to`.)
 
-Pair the bars with the fill, pulled from `fill_history` or
-`order_details`.
-Save the combined `{"fill": {...}, "bars": [...]}` object to a file.
+Pair the bars with the fill, pulled from `fill_history` or `order_details`. Save the combined `{"fill": {...}, "bars": [...]}` object to a file.
 
 ```bash
 python3 scripts/slippage.py --file fill_and_bars.json \
@@ -133,13 +109,7 @@ Sign convention: **positive = adverse**. See `references/tca-definitions.md`.
 
 ### 3. Position-level recap — MFE/MAE
 
-When the user asks "how far in the money did that trade go?", pull
-`timeline_report`'s `trades[].mae`/`mfe`/`hold_minutes`, or
-`timeline_details`'s `summary.mae`/`mfe`/`hold_minutes` for one trade.
-`position_history` carries P&L, quantity, and timestamps for the
-closed position, but no MFE/MAE/hold-time field. No script runs for
-the aggregate view. If the user wants a bar-level replay, hand off to
-`trade-replay`.
+When the user asks "how far in the money did that trade go?", pull `timeline_report`'s `trades[].mae`/`mfe`/`hold_minutes`, or `timeline_details`'s `summary.mae`/`mfe`/`hold_minutes` for one trade. `position_history` carries P&L, quantity, and timestamps for the closed position, but no MFE/MAE/hold-time field. No script runs for the aggregate view. If the user wants a bar-level replay, hand off to `trade-replay`.
 
 ## Cost posture
 

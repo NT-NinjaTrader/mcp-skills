@@ -1,7 +1,6 @@
 # Regime narrative templates
 
-Use these patterns to translate numeric output from `vwap.py`, `profile.py`, and `atr.py` into short, opinionated sentences.
-The goal is clarity for the trader who reads the response, not exhaustive detail.
+Use these patterns to translate numeric output from `vwap.py`, `profile.py`, and `atr.py` into short, opinionated sentences. The goal is clarity for the trader who reads the response, not exhaustive detail.
 
 Rules:
 
@@ -20,8 +19,7 @@ From `atr.py` output.
 | `realized_vol_annualized_pct` < 0.7 × its long-run median | "volatility contraction — realized vol {X}% vs historical {Y}%" |
 | Within ±30% of median | "volatility in a normal range ({X}% realized)" |
 
-If no historical median is available, state the raw value.
-Add an honest disclaimer, for example "no session baseline supplied — reporting raw".
+If no historical median is available, state the raw value. Add an honest disclaimer, for example "no session baseline supplied — reporting raw".
 
 ## Price vs VWAP
 

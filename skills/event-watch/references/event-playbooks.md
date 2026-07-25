@@ -1,11 +1,8 @@
 # Event playbooks
 
-Per-event narrative context.
-When the user asks "why did ES move?" or "is CPI coming up?", consult the relevant entry.
-It covers what drives the reaction, which products move most, and typical magnitudes.
+Per-event narrative context. When the user asks "why did ES move?" or "is CPI coming up?", consult the relevant entry. It covers what drives the reaction, which products move most, and typical magnitudes.
 
-**Magnitudes below are heuristics**, not forecasts.
-Use `reaction_size.py` against the last 6–12 releases of the same event for a live estimate.
+**Magnitudes below are heuristics**, not forecasts. Use `reaction_size.py` against the last 6–12 releases of the same event for a live estimate.
 
 ---
 

@@ -1,10 +1,6 @@
 # Report schema — field provenance
 
-The prompts assume a trade-report schema. This document reproduces
-that schema's fields. This skill assembles an approximation of that
-shape from the MCP tools available today. This file documents which
-fields come from where, and which are intentionally `null` (never
-fabricated).
+The prompts assume a trade-report schema. This document reproduces that schema's fields. This skill assembles an approximation of that shape from the MCP tools available today. This file documents which fields come from where, and which are intentionally `null` (never fabricated).
 
 ## Top-level shape
 
@@ -92,8 +88,7 @@ summary:
 
 ## Data-quality safeguards in `compute_derived.py`
 
-So that the prompts do not cite misleading facts, certain fields
-become `null` when their inputs are insufficient:
+So that the prompts do not cite misleading facts, certain fields become `null` when their inputs are insufficient:
 
 | Missing input | Nulled output |
 |---------------|---------------|
@@ -103,14 +98,11 @@ become `null` when their inputs are insufficient:
 | `planned_stop_points` missing/zero | `realized_R`, `mfe_R`, `mae_R` |
 | `mfe_points == 0` (trade never went in favor) | `giveback_from_mfe_pct`, `realized_vs_mfe_pct` |
 
-This is intentional. The prompt contract says "only use facts
-present in the report". A null field simply drops out of citation.
-It never appears as a misleading zero.
+This is intentional. The prompt contract says "only use facts present in the report". A null field simply drops out of citation. It never appears as a misleading zero.
 
 ## Fields that are null today
 
-These fields belong to the assembled report schema, but the MCP tools
-cannot reach them:
+These fields belong to the assembled report schema, but the MCP tools cannot reach them:
 
 - **`timeline[n].participation_rate_vs_session`** — a volume feature
   per minute. This needs tick-volume bar fetches and a session
@@ -128,17 +120,11 @@ cannot reach them:
   MCP tool captures this today. It needs user input at trade-plan
   time.
 
-**Guidance for prompts:** when a field is `null`, the prompt's
-"fact-only with citations" rule means the analysis must not cite
-it. Prompts 01/02/03/06/07 are resilient to nulls. They cite only
-populated fields. Prompts 08/09 (clustering, expectancy) benefit
-from populated `timeline[]` entries, but they still produce useful
-output without them.
+**Guidance for prompts:** when a field is `null`, the prompt's "fact-only with citations" rule means the analysis must not cite it. Prompts 01/02/03/06/07 are resilient to nulls. They cite only populated fields. Prompts 08/09 (clustering, expectancy) benefit from populated `timeline[]` entries, but they still produce useful output without them.
 
 ## How `assemble_report.py` ingests MCP data
 
-The script accepts pre-joined input. The caller (the skill's workflow)
-must fetch and pre-shape:
+The script accepts pre-joined input. The caller (the skill's workflow) must fetch and pre-shape:
 
 1. **Trades list** — run `trade-journal`'s `streaks.py` FIFO
    round-tripper over `fill_history` for the paired trades. Then run
@@ -152,5 +138,4 @@ must fetch and pre-shape:
    `performance_summary` has no flat fields by these names.
 4. **Market context** — optional; from `market-context` per symbol.
 
-The script performs no MCP calls itself. This keeps it
-deterministic, and runnable against fixtures for tests.
+The script performs no MCP calls itself. This keeps it deterministic, and runnable against fixtures for tests.

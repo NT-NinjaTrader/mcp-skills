@@ -82,10 +82,19 @@ jobs:
       # match set is empty. `-0` keeps a path with a space intact.
       - name: ste-lint every markdown file
         run: git ls-files -z '*.md' | xargs -0 -r python3 scripts/ste-lint.py
-      # ste-lint.py skips README.md, because a README follows the ordinary
-      # technical-writing rules instead. This gate keeps that file covered.
-      - name: reflow-lint the README
-        run: python3 scripts/readme-reflow-lint.py README.md
+      # Every prose paragraph sits on one source line. This gate covers every
+      # markdown file, including README.md, which ste-lint.py skips because a
+      # README follows the ordinary technical-writing rules instead.
+      #
+      # The prompt files under skills/trade-debrief/references/prompts/ are
+      # exempt. Each one is a verbatim prompt for another model, and the
+      # skill sends the text as-is, so its line breaks are part of the
+      # artifact. ste-lint.py skips the same paths.
+      - name: reflow-lint every markdown file
+        run: |
+          git ls-files -z '*.md' \
+            | grep -zv '^skills/trade-debrief/references/prompts/' \
+            | xargs -0 -r python3 scripts/readme-reflow-lint.py
   zizmor:
     if: github.repository == 'NT-NinjaTrader/mcp-skills'
     runs-on: ubuntu-latest

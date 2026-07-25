@@ -8,32 +8,19 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-Report the live health of the user's open futures positions.
-Cover how much room they have before the stop trips and how far the target is.
-Cover whether their plan drifted.
-Also report whether their exposure is a single concentrated bet across correlated index products.
-Never emit order payloads. That is `scale-manager`'s job.
+Report the live health of the user's open futures positions. Cover how much room they have before the stop trips and how far the target is. Cover whether their plan drifted. Also report whether their exposure is a single concentrated bet across correlated index products. Never emit order payloads. That is `scale-manager`'s job.
 
 ## Safety gate
 
-This skill reads only.
-It calls no tool that changes an account, an order, or an alert.
-It never calls `place_order`, `modify_order`, `close_position`, or `create_alert`.
-Every number and every proposal here is text for the user to read.
-The user approves any change, and a sibling skill composes it.
+This skill reads only. It calls no tool that changes an account, an order, or an alert. It never calls `place_order`, `modify_order`, `close_position`, or `create_alert`. Every number and every proposal here is text for the user to read. The user approves any change, and a sibling skill composes it.
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers.
-Account names are unique to one server.
-Once a workflow resolves an account on a server, every downstream call must go through that same server.
-This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc.
-Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once a workflow resolves an account on a server, every downstream call must go through that same server. This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `my_portfolio` — current positions, open P&L, used margin. Prune with `fields=["account.netLiq","account.dailyLoss","account.openPnL","positions[]","workingOrders[]"]`.
 - `market_snapshot` — last price, tickSize, valuePerPoint for every symbol with an open position. Prune with `fields=["snapshots[].symbol","snapshots[].lastPrice","snapshots[].tickSize","snapshots[].valuePerPoint","snapshots[].bidPrice","snapshots[].askPrice"]`.
@@ -70,9 +57,7 @@ See `references/guardrails.md` for the flag taxonomy and triage templates.
 
 ### 3. Live what-if (on ask)
 
-When the user asks "what if I moved my stop to X?" or "what if I went breakeven?", feed one position's JSON to `whatif_live.py`.
-Save the relevant `positions[]` entry from `health.py`'s output to a file, and pass its path with `--file`.
-Never re-type or inline a large JSON payload into the command (stdin still works as a fallback):
+When the user asks "what if I moved my stop to X?" or "what if I went breakeven?", feed one position's JSON to `whatif_live.py`. Save the relevant `positions[]` entry from `health.py`'s output to a file, and pass its path with `--file`. Never re-type or inline a large JSON payload into the command (stdin still works as a fallback):
 
 ```bash
 # Move stop to 7148
@@ -85,11 +70,9 @@ python3 scripts/whatif_live.py --file position.json --breakeven
 python3 scripts/whatif_live.py --file position.json --new-target 7170
 ```
 
-The script reports the new risk dollars and the new R-multiple, relative to the *original* risk as the denominator.
-For breakeven, it also reports how much risk the move removes from the current stop position.
+The script reports the new risk dollars and the new R-multiple, relative to the *original* risk as the denominator. For breakeven, it also reports how much risk the move removes from the current stop position.
 
-**This script is informational.** It never emits `modify_order` payloads.
-If the user decides they actually want to move the stop, hand off to `scale-manager`.
+**This script is informational.** It never emits `modify_order` payloads. If the user decides they actually want to move the stop, hand off to `scale-manager`.
 
 ### 4. Stop-drift detection (on ask)
 
@@ -104,36 +87,26 @@ python3 scripts/stop_drift.py \
     --tick-size 0.25 --value-per-point 50 --net-pos 4
 ```
 
-`order_history` reports only the current stop price, not its prior versions.
-Pass the stop price you know from bracket placement as `--original-stop`.
-Without it, the script reports the current stop only and skips the drift comparison.
+`order_history` reports only the current stop price, not its prior versions. Pass the stop price you know from bracket placement as `--original-stop`. Without it, the script reports the current stop only and skips the drift comparison.
 
-Output classifies drift as `toward_entry` (trailing, less risk), `away_from_entry` (widening, more risk — a behavioral red flag), or `unchanged`.
-With `--value-per-point` and `--net-pos`, the output includes the exact dollar amount of risk added or removed.
+Output classifies drift as `toward_entry` (trailing, less risk), `away_from_entry` (widening, more risk — a behavioral red flag), or `unchanged`. With `--value-per-point` and `--net-pos`, the output includes the exact dollar amount of risk added or removed.
 
 ### 5. Alert-proposal hook (on ask)
 
-**This skill never calls `create_alert`.**
-Emit the alert expression as a string, then hand off to `alerts-composer`.
-That skill composes the alert, and the user approves the submission there.
+**This skill never calls `create_alert`.** Emit the alert expression as a string, then hand off to `alerts-composer`. That skill composes the alert, and the user approves the submission there.
 
-When the user wants an alert on a current position, propose an expression that uses the position's own levels.
-Examples:
+When the user wants an alert on a current position, propose an expression that uses the position's own levels. Examples:
 
 - Stop is 7148 → propose `lastPrice(ESU6) < 7148.75` (3 ticks before the stop — a heads-up before the trip)
 - Position has no stop → propose `posOpenPLUsd(ESU6) < -300` (a hard PnL floor)
 
-**Subjects must stay unquoted.** The DSL parser rejects `lastPrice("ESU6")`.
-The subject regex `[\$@]?[\w\s\-\+/|]+` excludes double-quotes: the server's rule parser accepts only unquoted subject strings.
-Submission via `create_alert` fails with `errorText`, not silently.
-`alerts-composer/scripts/validate.py` catches it offline, so always run the proposed expression through `validate.py` before you hand it off.
+**Subjects must stay unquoted.** The DSL parser rejects `lastPrice("ESU6")`. The subject regex `[\$@]?[\w\s\-\+/|]+` excludes double-quotes: the server's rule parser accepts only unquoted subject strings. Submission via `create_alert` fails with `errorText`, not silently. `alerts-composer/scripts/validate.py` catches it offline, so always run the proposed expression through `validate.py` before you hand it off.
 
 Emit the expression as a string. Never call `create_alert` from this skill.
 
 ## Output idioms
 
-Use `references/guardrails.md` narrative templates. Lead with dollars, then follow with R-multiples and ticks.
-A typical "how am I doing?" reply:
+Use `references/guardrails.md` narrative templates. Lead with dollars, then follow with R-multiples and ticks. A typical "how am I doing?" reply:
 
 > "Long 4 ES at 7150, mark 7158 (+$1,650, +4.1R). Stop 7148 is 41 ticks
 > below — $2,050 at risk, 410% of daily budget — consider trimming or
@@ -152,13 +125,7 @@ A typical "how am I doing?" reply:
 
 ## Not computed: live MFE/MAE
 
-This skill does not report MFE or MAE for a live position.
-It also does not compare either one against a historical median.
-Excursion math needs a `market_history` bar window per position, which costs one extra tool call per symbol.
-The dashboard stays fast instead.
-`trade-replay` covers the same excursion math for closed trades.
-A future enhancement adds `health.py --market-history PATH` per position, for users who explicitly want live excursion data.
-Until then, `open_pl_dollars` is the available live P&L signal.
+This skill does not report MFE or MAE for a live position. It also does not compare either one against a historical median. Excursion math needs a `market_history` bar window per position, which costs one extra tool call per symbol. The dashboard stays fast instead. `trade-replay` covers the same excursion math for closed trades. A future enhancement adds `health.py --market-history PATH` per position, for users who explicitly want live excursion data. Until then, `open_pl_dollars` is the available live P&L signal.
 
 ## Resource layout
 

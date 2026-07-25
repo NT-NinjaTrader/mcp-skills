@@ -1,7 +1,6 @@
 # Guardrail flag taxonomy
 
-Each flag that `health.py` or `stop_drift.py` can emit, what it means, and how to triage it.
-Use these when you narrate a health dashboard. The flag key stays stable for tools; the narrative below is for the user.
+Each flag that `health.py` or `stop_drift.py` can emit, what it means, and how to triage it. Use these when you narrate a health dashboard. The flag key stays stable for tools; the narrative below is for the user.
 
 ## Per-position flags
 
@@ -9,8 +8,7 @@ Use these when you narrate a health dashboard. The flag key stays stable for too
 
 **Meaning:** The position has a non-zero `netPos` but no working stop order exists for its symbol.
 
-**Why it matters:** An unprotected position carries unlimited downside risk.
-Market gaps, news, and flash crashes give no guardrail.
+**Why it matters:** An unprotected position carries unlimited downside risk. Market gaps, news, and flash crashes give no guardrail.
 
 **Triage prompt:**
 - "No stop attached on {symbol}. Current open P&L {open_pl}, last price {last}. Do you want to place a stop?"
@@ -18,20 +16,15 @@ Market gaps, news, and flash crashes give no guardrail.
 
 ### `no_bracket_attached`
 
-**Meaning:** The position has no stop and no target attached.
-This is more severe than `no_stop_attached` — it also means no profit-taking plan.
+**Meaning:** The position has no stop and no target attached. This is more severe than `no_stop_attached` — it also means no profit-taking plan.
 
 **Triage prompt:** Use the same prompt as above, and also suggest a target at an R-multiple of the proposed stop.
 
 ### `ambiguous_protection: stop` / `ambiguous_protection: target`
 
-**Meaning:** More than one working order matches the stop (or target) shape for this symbol.
-`health.py` cannot pick the right one.
-This happens when two or more opposing-action orders share the same shape.
-None of them carries `bracket` metadata to link it to a specific entry.
+**Meaning:** More than one working order matches the stop (or target) shape for this symbol. `health.py` cannot pick the right one. This happens when two or more opposing-action orders share the same shape. None of them carries `bracket` metadata to link it to a specific entry.
 
-**Why it matters:** The dashboard cannot report a `stop_price` or `distance_to_stop_*` field without a confirmed order.
-A guess could report the wrong risk number to the user.
+**Why it matters:** The dashboard cannot report a `stop_price` or `distance_to_stop_*` field without a confirmed order. A guess could report the wrong risk number to the user.
 
 **Triage prompt:**
 - "I see more than one candidate stop order on {symbol} and can't tell which one protects this position. Can you confirm the order ID?"
@@ -39,14 +32,9 @@ A guess could report the wrong risk number to the user.
 
 ### Stop moved against entry
 
-`health.py` cannot flag this from a single snapshot.
-It has no record of the stop's original placement.
-Use `stop_drift.py` with `--original-stop` for this instead.
-It reports `current_risk_dollars` against `original_risk_dollars`, so you can state the ratio directly.
+`health.py` cannot flag this from a single snapshot. It has no record of the stop's original placement. Use `stop_drift.py` with `--original-stop` for this instead. It reports `current_risk_dollars` against `original_risk_dollars`, so you can state the ratio directly.
 
-**Why it matters:** A stop moved against the entry is the most common behavioral loss-maker.
-The original plan said X; emotion says "just give it a little more room."
-Each re-move compounds the risk.
+**Why it matters:** A stop moved against the entry is the most common behavioral loss-maker. The original plan said X; emotion says "just give it a little more room." Each re-move compounds the risk.
 
 **Triage prompt:**
 - "Your stop on {symbol} has been moved from {original_stop} to {current_stop} — current risk {current_risk} vs original {original_risk}. That's {ratio}× the original plan."
@@ -56,12 +44,9 @@ Each re-move compounds the risk.
 
 ### `correlated_long_exposure: {products}`
 
-**Meaning:** The account is long more than one equity-index futures product at once.
-This includes any subset of ES, MES, NQ, MNQ, YM, MYM, RTY, M2K.
+**Meaning:** The account is long more than one equity-index futures product at once. This includes any subset of ES, MES, NQ, MNQ, YM, MYM, RTY, M2K.
 
-**Why it matters:** These products correlate 0.8–0.95+ intra-day.
-Long ES + long NQ + long RTY is essentially one large long-beta position, not three diversified trades.
-Daily P&L volatility is roughly additive, not diversified.
+**Why it matters:** These products correlate 0.8–0.95+ intra-day. Long ES + long NQ + long RTY is essentially one large long-beta position, not three diversified trades. Daily P&L volatility is roughly additive, not diversified.
 
 **Triage prompt:**
 - "You're long {products} simultaneously — effectively one large index-beta bet. Consider whether the combined position size is what you intend."
@@ -75,8 +60,7 @@ This mirrors the flag above, for shorts.
 
 **Meaning:** Total used margin exceeds 80% of the account's max historical net liquidation.
 
-**Why it matters:** This is close to auto-liquidation thresholds.
-A normal intraday swing could trip a liquidation.
+**Why it matters:** This is close to auto-liquidation thresholds. A normal intraday swing could trip a liquidation.
 
 **Triage prompt:**
 - "Margin utilization is {pct}% of your max netLiq. Small price moves against you could trip auto-liquidation."
@@ -88,20 +72,15 @@ These come from `stop_drift.py`, not `health.py`, but they live in the same narr
 
 ### `drift_direction = "toward_entry"`
 
-The stop moved closer to entry. It trails the position or locks in profit.
-This is neutral to positive.
-Say: "You trailed the stop from {original_stop} to {current_stop}, locking in {risk_removed_dollars}."
+The stop moved closer to entry. It trails the position or locks in profit. This is neutral to positive. Say: "You trailed the stop from {original_stop} to {current_stop}, locking in {risk_removed_dollars}."
 
 ### `drift_direction = "away_from_entry"`
 
-The stop moved farther from entry — this widens the risk.
-State the risk ratio: `current_risk_dollars` divided by `original_risk_dollars`.
-Say: "You widened the stop from {original_stop} to {current_stop} — adding {risk_added_dollars}, {ratio}× the original risk."
+The stop moved farther from entry — this widens the risk. State the risk ratio: `current_risk_dollars` divided by `original_risk_dollars`. Say: "You widened the stop from {original_stop} to {current_stop} — adding {risk_added_dollars}, {ratio}× the original risk."
 
 ### `drift_direction = "unchanged"`
 
-The stop stayed at its original level — nothing to report unless the user asked specifically about drift.
-If they did, say: "Stop is still at its original level of {stop}."
+The stop stayed at its original level — nothing to report unless the user asked specifically about drift. If they did, say: "Stop is still at its original level of {stop}."
 
 ## Flags intentionally not included
 

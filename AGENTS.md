@@ -1,13 +1,8 @@
 # AGENTS.md
 
-This repository holds 13 trading skills for the NinjaTrader MCP server.
-A skill turns a trading task into a guided workflow over the server's tools.
-A skill proposes an action. It never executes a trade on its own.
+This repository holds 13 trading skills for the NinjaTrader MCP server. A skill turns a trading task into a guided workflow over the server's tools. A skill proposes an action. It never executes a trade on its own.
 
-This file orients two readers. Part 1 serves a user or an agent that runs the skills.
-Part 2 serves a contributor who changes them.
-Read [`README.md`](README.md) first for installation and the skill roster.
-The full product documentation lives at <https://docs.ninjatrader.com/mcp>.
+This file orients two readers. Part 1 serves a user or an agent that runs the skills. Part 2 serves a contributor who changes them. Read [`README.md`](README.md) first for installation and the skill roster. The full product documentation lives at <https://docs.ninjatrader.com/mcp>.
 
 ---
 
@@ -15,8 +10,7 @@ The full product documentation lives at <https://docs.ninjatrader.com/mcp>.
 
 ### Tool names are bare. Your client adds the prefix.
 
-A skill file names a tool bare, such as `place_order`, `my_portfolio`, or
-`market_snapshot`. Each client applies its own prefix at run time:
+A skill file names a tool bare, such as `place_order`, `my_portfolio`, or `market_snapshot`. Each client applies its own prefix at run time:
 
 | Client | Qualified form |
 |---|---|
@@ -29,12 +23,7 @@ Never write a prefix into a skill file. See [Part 2](#part-2--change-the-skills)
 
 ### One environment per workflow
 
-This beta bundles the Demo (simulation) server only.
-The endpoint is in [`mcp.json`](mcp.json) and in the three plugin manifests.
-Demo (simulation) and live are separate servers with separate accounts.
-Resolve an account once. Then stay on that same server for every later call.
-A workflow that crosses servers returns an account that does not exist there.
-See [Connect Your AI Agent](https://docs.ninjatrader.com/mcp/connect).
+This beta bundles the Demo (simulation) server only. The endpoint is in [`mcp.json`](mcp.json) and in the three plugin manifests. Demo (simulation) and live are separate servers with separate accounts. Resolve an account once. Then stay on that same server for every later call. A workflow that crosses servers returns an account that does not exist there. See [Connect Your AI Agent](https://docs.ninjatrader.com/mcp/connect).
 
 ### Safety
 
@@ -45,16 +34,11 @@ A skill proposes an order payload. The user approves it. The server enforces the
 - Every mutating tool call sits after an explicit approval gate in its skill body.
   `skills/scale-manager/SKILL.md` § 5 and `skills/alerts-composer/SKILL.md` § 6 show the pattern.
 
-See [Safety & Disclosures](https://docs.ninjatrader.com/mcp/safety) and
-[Pre-Trade Risk](https://docs.ninjatrader.com/mcp/pre-trade-risk).
+See [Safety & Disclosures](https://docs.ninjatrader.com/mcp/safety) and [Pre-Trade Risk](https://docs.ninjatrader.com/mcp/pre-trade-risk).
 
 ### Find the right skill
 
-Each skill declares its trigger phrases in the `description` field of its `SKILL.md`.
-Read [`README.md`](README.md) § Skills for the roster, with a link to each skill file.
-Read [Trading Skills](https://docs.ninjatrader.com/mcp/skills) and
-[Workflows](https://docs.ninjatrader.com/mcp/skills-workflows) for the phrasings that route to each job.
-Call `describe(topic='index')` to enumerate the current tool set and every documented topic.
+Each skill declares its trigger phrases in the `description` field of its `SKILL.md`. Read [`README.md`](README.md) § Skills for the roster, with a link to each skill file. Read [Trading Skills](https://docs.ninjatrader.com/mcp/skills) and [Workflows](https://docs.ninjatrader.com/mcp/skills-workflows) for the phrasings that route to each job. Call `describe(topic='index')` to enumerate the current tool set and every documented topic.
 
 ### Get help
 
@@ -92,11 +76,9 @@ All 13 files carry these six sections, in this order. Keep the order when you ed
 5. `## Disambiguation` — when to use a sibling skill instead.
 6. `## Resource layout` — one line per bundled script and reference file, and when to load it.
 
-A skill may add a section, such as `## Known gotchas` or `## Explicit non-goals`.
-Keep the six above, and keep them in this order.
+A skill may add a section, such as `## Known gotchas` or `## Explicit non-goals`. Keep the six above, and keep them in this order.
 
-Put a correction, such as a fix to a wrong assumption, under a Gotchas heading.
-Do not scatter a correction through the prose.
+Put a correction, such as a fix to a wrong assumption, under a Gotchas heading. Do not scatter a correction through the prose.
 
 ### The bundled-script contract
 
@@ -129,9 +111,7 @@ This repository runs two registers. Match the register to the reader.
 | `README.md` | Ordinary technical prose | `scripts/readme-reflow-lint.py` |
 | `skills/trade-debrief/references/prompts/*.md` | Verbatim. Do not edit the prose. | none |
 
-A model-facing file earns the tighter register. A skill body re-enters the model's context
-on every turn it stays active, so each line costs tokens again. Terse, one-instruction
-sentences also route better. A README pays no token cost and a person reads it once.
+A model-facing file earns the tighter register. A skill body re-enters the model's context on every turn it stays active, so each line costs tokens again. Terse, one-instruction sentences also route better. A README pays no token cost and a person reads it once.
 
 ### Writing style: ASD-STE100 (model-facing files)
 
@@ -144,18 +124,13 @@ sentences also route better. A README pays no token cost and a person reads it o
 - State a condition before the instruction it governs.
 - Use one word for one meaning.
 
-Never reword a code identifier, a tool name, a command, quoted tool output, or a
-verbatim user phrase inside quotes. A `description` field cites the exact words a user
-says, so a reworded trigger phrase breaks routing. Write a `description` in the third
-person, because the client injects it into a system prompt.
+Never reword a code identifier, a tool name, a command, quoted tool output, or a verbatim user phrase inside quotes. A `description` field cites the exact words a user says, so a reworded trigger phrase breaks routing. Write a `description` in the third person, because the client injects it into a system prompt.
 
-The [`ste-writer`](.claude/agents/ste-writer.md) agent rewrites prose to these rules.
-Never run it on `README.md`.
+The [`ste-writer`](.claude/agents/ste-writer.md) agent rewrites prose to these rules. Never run it on `README.md`.
 
 ### Writing style: README.md (human-facing)
 
-`README.md` is the landing page, so write it the way a reader expects a landing page to
-read. These rules replace the STE rules above for that one file.
+`README.md` is the landing page, so write it the way a reader expects a landing page to read. These rules replace the STE rules above for that one file.
 
 - Write each paragraph as one source line. Reflow it. Do not wrap at a column, and do not
   break the line at a sentence boundary.
@@ -192,12 +167,8 @@ shellcheck scripts/*.sh                            # the shell gates
 | `scripts/check-references.py` | Every path a markdown file names exists on disk. `validate-all.sh` calls it. |
 | `scripts/manifest-lint.sh` | The manifests agree on the endpoint, the version, the description, and the skills list. A mismatch makes a client refuse the plugin. |
 
-CI runs these gates on every pull request. See
-[`.github/workflows/validate.yml`](.github/workflows/validate.yml).
-Then work through [`.github/pull_request_template.md`](.github/pull_request_template.md).
+CI runs these gates on every pull request. See [`.github/workflows/validate.yml`](.github/workflows/validate.yml). Then work through [`.github/pull_request_template.md`](.github/pull_request_template.md).
 
 ### The safety posture is not negotiable
 
-A skill proposes an action. It never executes a trade or another account-changing action
-on its own. Do not submit a change that adds autonomous execution. We decline such a
-change, whatever its other merits.
+A skill proposes an action. It never executes a trade or another account-changing action on its own. Do not submit a change that adds autonomous execution. We decline such a change, whatever its other merits.

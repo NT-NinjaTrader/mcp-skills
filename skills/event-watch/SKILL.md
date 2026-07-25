@@ -14,19 +14,15 @@ Give the user volatility-event context on demand. Three things:
 2. Historical reaction-size context ("how much does ES usually move on CPI?")
 3. Post-event attribution on ask ("why did it just spike?")
 
-It also recognizes session boundaries: NY cash open, EIA release window, FOMC press conference.
-Those drive volatility even without an explicit event.
+It also recognizes session boundaries: NY cash open, EIA release window, FOMC press conference. Those drive volatility even without an explicit event.
 
 ## Environment routing
 
-Calendars and event data only — no account binding.
-A sibling skill's account resolution might already pin the session to demo (simulation) or live.
-If so, stay on that same MCP server.
+Calendars and event data only — no account binding. A sibling skill's account resolution might already pin the session to demo (simulation) or live. If so, stay on that same MCP server.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `economic_calendar` — upcoming releases with `date`, `eventName`, `importance` (1–5), `actual`, `consensus`, `prior`. These field names come from an external, unversioned passthrough API. Verify them against a live call — the MCP server's own schema does not guarantee them.
 - `earnings_calendar` — equity-index context
@@ -38,13 +34,11 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ## Design constraint — strictly reactive
 
-Phrase outputs as "you asked near X", never "X is about to happen" (that would imply a timer this skill does not have).
-Proactive pushes belong on the MCP's SSE channel, not in a skill.
+Phrase outputs as "you asked near X", never "X is about to happen" (that would imply a timer this skill does not have). Proactive pushes belong on the MCP's SSE channel, not in a skill.
 
 ## Grounding rules — the calendar is the tool output, nothing else
 
-Every event you report must appear in the `economic_calendar` payload
-(after `importance_filter.py`). These rules are absolute:
+Every event you report must appear in the `economic_calendar` payload (after `importance_filter.py`). These rules are absolute:
 
 - **Never add an event from memory**, even one that "should" happen this week. If it is not in the tool output, it does not go in the answer.
 - **Never invent numbers.** Do not add any consensus, prior, actual, or rate level that is not in the payload. If a field does not appear in the payload, leave it out. Never estimate it.
@@ -60,25 +54,16 @@ economic_calendar(fromDate=<today ISO-8601>, toDate=<today+3d ISO-8601>)
 my_portfolio(fields=["positions[].symbol","positions[].netPos","positions[].openPnL"])
 ```
 
-Call `my_portfolio` once for each account name you already know from an earlier tool call in this session.
-The tool requires an `account` argument — a call without one fails.
-If you do not know an account name yet, ask the user for one before you call `my_portfolio`.
-Never pass a guessed account name, like `Sim101`. The server rejects it.
+Call `my_portfolio` once for each account name you already know from an earlier tool call in this session. The tool requires an `account` argument — a call without one fails. If you do not know an account name yet, ask the user for one before you call `my_portfolio`. Never pass a guessed account name, like `Sim101`. The server rejects it.
 
-**Expect an oversized result.** A multi-day calendar window often exceeds the inline tool-result cap.
-When that happens, your client saves the JSON to a file and returns the path instead of the payload.
-That file is the input to `importance_filter.py` — pass the saved path with `--file`.
-Do not explore the file with ad-hoc `jq` queries or reassemble the calendar yourself.
-The filter script is the only sanctioned reader.
-Never re-type or inline a large JSON payload into the command.
+**Expect an oversized result.** A multi-day calendar window often exceeds the inline tool-result cap. When that happens, your client saves the JSON to a file and returns the path instead of the payload. That file is the input to `importance_filter.py` — pass the saved path with `--file`. Do not explore the file with ad-hoc `jq` queries or reassemble the calendar yourself. The filter script is the only sanctioned reader. Never re-type or inline a large JSON payload into the command.
 
 ```bash
 python3 scripts/importance_filter.py --file <saved-tool-result-path> \
     --products ES MNQ CL --min-importance 3
 ```
 
-If the response has `hasMore: true`, page with `offset` and run the filter over each page before you answer.
-Otherwise, say the list covers only the first page.
+If the response has `hasMore: true`, page with `offset` and run the filter over each page before you answer. Otherwise, say the list covers only the first page.
 
 `importance_filter.py` drops:
 - events with `importance < --min-importance` (default 3)
@@ -88,10 +73,7 @@ Output fields: `kept`, `dropped_by_importance`, `dropped_by_relevance`, `events[
 
 ### 2. Reaction-size context — "how much does ES usually move on CPI?"
 
-Gather the last N releases from `economic_calendar`.
-Use a `fromDate` far enough back for about 6 releases of the same type.
-CPI is monthly, so that is about 180 days.
-Then, for each release, fetch a bar window around the release time via `market_history`:
+Gather the last N releases from `economic_calendar`. Use a `fromDate` far enough back for about 6 releases of the same type. CPI is monthly, so that is about 180 days. Then, for each release, fetch a bar window around the release time via `market_history`:
 
 ```
 market_history(
@@ -131,9 +113,7 @@ All values are in raw points. Multiply by `valuePerPoint` × `|netPos|` for the 
 
 ### 3. Post-event attribution on ask — "why did it spike?"
 
-Two inputs: recent price action (from `market-context` or `market_history`) + the nearest release from `economic_calendar`.
-Narrate the causal link where the timestamps line up.
-If no release falls within 10min, do not invent one — say "no scheduled release near the spike; could be headline-driven."
+Two inputs: recent price action (from `market-context` or `market_history`) + the nearest release from `economic_calendar`. Narrate the causal link where the timestamps line up. If no release falls within 10min, do not invent one — say "no scheduled release near the spike; could be headline-driven."
 
 ### 4. Session-boundary on ask
 
@@ -146,19 +126,15 @@ The boundary table lives in `references/session-schedules.md` — load that file
 
 ### 5. Alert-proposal handoff
 
-When the user holds a position exposed to a known-risk event, propose a reaction-window bracket alert.
-Then hand it to the user to submit via `alerts-composer`:
+When the user holds a position exposed to a known-risk event, propose a reaction-window bracket alert. Then hand it to the user to submit via `alerts-composer`:
 
 ```
 Propose: lastPrice(ESU6) > <entry + reaction_size> OR lastPrice(ESU6) < <entry - reaction_size>
 ```
 
-Use `mean_abs_move` from `reaction_size.py` as the per-side magnitude, or bump it by 1.5× for a "meaningful surprise" threshold.
-Pass this expression to `alerts-composer` — this skill does not submit alerts.
+Use `mean_abs_move` from `reaction_size.py` as the per-side magnitude, or bump it by 1.5× for a "meaningful surprise" threshold. Pass this expression to `alerts-composer` — this skill does not submit alerts.
 
-**Subjects must be unquoted.** The DSL parser rejects `lastPrice("ESU6")`.
-The subject regex `[\$@]?[\w\s\-\+/|]+` excludes double-quotes: the server's rule parser accepts only unquoted subject strings.
-`alerts-composer/scripts/validate.py` catches this offline before submission.
+**Subjects must be unquoted.** The DSL parser rejects `lastPrice("ESU6")`. The subject regex `[\$@]?[\w\s\-\+/|]+` excludes double-quotes: the server's rule parser accepts only unquoted subject strings. `alerts-composer/scripts/validate.py` catches this offline before submission.
 
 ## Output idioms
 
