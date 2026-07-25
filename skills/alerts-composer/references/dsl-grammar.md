@@ -1,7 +1,6 @@
 # Alert DSL — grammar
 
-This file documents the alert DSL grammar enforced by the
-NinjaTrader/Tradovate trading platforms.
+This file documents the alert DSL grammar enforced by the NinjaTrader/Tradovate trading platforms.
 
 ## Full grammar
 
@@ -39,8 +38,7 @@ logicOp         = AND | OR | XOR
 
 ## JSON shorthand
 
-The server also accepts a JSON form that serializes to the
-same AST:
+The server also accepts a JSON form that serializes to the same AST:
 
 ```json
 {
@@ -58,8 +56,7 @@ same AST:
 - `rf` = optional right-function (for function-vs-function compares)
 - `subj` = subject for `l`
 
-Note the typo `conjuction` (not `conjunction`) is the literal key used
-in production data — do not "fix" it.
+Note the typo `conjuction` (not `conjunction`) is the literal key used in production data — do not "fix" it.
 
 Equivalent text form:
 ```
@@ -78,16 +75,11 @@ The interpreter returns one of these on failure (via `AlertExpressionInterpretat
 - `UnsupportedOperation(op)` — a compare/logic/arithmetic operator not in the lists above. This means a parse-vs-interpret mismatch — rare.
 - `WrongArithmeticExpression` / `WrongLogicalExpression` — a structural malformation. This should not happen after a successful parse, but the evaluator returns it if it sees an unexpected AST shape.
 
-If the expression returns `Right(status)` at runtime, the alert does NOT trigger.
-The interpreter silently skips it until the inputs become evaluable.
-This is why offline validation matters.
-A typo in a function name or subject still passes `create_alert`, but the alert never fires.
+If the expression returns `Right(status)` at runtime, the alert does NOT trigger. The interpreter silently skips it until the inputs become evaluable. This is why offline validation matters. A typo in a function name or subject still passes `create_alert`, but the alert never fires.
 
 ## Boolean functions — reserved, not active
 
-The grammar includes a `BooleanCall` node, but the server registers no boolean function.
-So today, no boolean function name is callable.
-If `list_alerts` returns an expression that references a boolean name, treat it as legacy data.
+The grammar includes a `BooleanCall` node, but the server registers no boolean function. So today, no boolean function name is callable. If `list_alerts` returns an expression that references a boolean name, treat it as legacy data.
 
 ## Known gotchas (via real test cases)
 

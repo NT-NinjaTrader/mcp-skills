@@ -2,9 +2,7 @@
 
 **Single-trade counterfactuals are not rule validations.**
 
-This skill answers "what would THIS trade have returned under exit rule X?"
-It does not answer "what would exit rule X return over all my trades?"
-The two questions look similar, but they have opposite failure modes.
+This skill answers "what would THIS trade have returned under exit rule X?" It does not answer "what would exit rule X return over all my trades?" The two questions look similar, but they have opposite failure modes.
 
 ## The trap
 
@@ -15,14 +13,9 @@ A user runs a few what-ifs on a winning trade:
 
 Conclusion the user WANTS to draw: "I should switch to 2R targets."
 
-Conclusion the data actually supports: "On this one trade, a 2R rule
-outperformed the discretionary exit by $400."
+Conclusion the data actually supports: "On this one trade, a 2R rule outperformed the discretionary exit by $400."
 
-This difference changes everything. A rule that converts one winner
-into a bigger winner might be the SAME rule that turns a wobbly
-winner into a -1R loser, when the market does not follow through. A
-rule evaluation needs ALL the trades, and the ones where the rule
-hurts you.
+This difference changes everything. A rule that converts one winner into a bigger winner can also work against you. When the market does not follow through, the SAME rule turns a wobbly winner into a -1R loser. A rule evaluation needs ALL the trades, and the ones where the rule hurts you.
 
 ## How to narrate what-ifs
 
@@ -33,8 +26,7 @@ hurts you.
 **Not okay:**
 > "You should use 2R targets — they're $400 better."
 
-The first is a fact about this trade. The second is a rule claim
-unsupported by a sample of 1.
+The first is a fact about this trade. The second is a rule claim unsupported by a sample of 1.
 
 ## When the user asks for a rule recommendation
 
@@ -57,8 +49,7 @@ Route them away from per-trade replay. Point them toward:
 
 ## Mandatory phrasing in the output
 
-Every trade-replay output that surfaces a superior-looking counter-
-factual should include a survivorship note. Suggested templates:
+Every trade-replay output that surfaces a superior-looking counter-factual should include a survivorship note. Suggested templates:
 
 - "...that's what this specific trade would have done. Can't tell if
   a 2R rule across your book would be an improvement from one sample."
@@ -66,14 +57,10 @@ factual should include a survivorship note. Suggested templates:
   evaluation if you want to formalize."
 - "This is a retrospective on ONE trade. N=1 is not a rule."
 
-This phrasing is load-bearing. It separates a math fact for the user
-from a lesson in cherry-picking.
+This phrasing is load-bearing. It separates a math fact for the user from a lesson in cherry-picking.
 
 ## When to skip the caveat
 
-Short, specific what-ifs that do not imply a rule change. "How far
-did it go?" → MFE report. "Where did it touch?" → path. These are
-descriptive, not prescriptive. They do not need the framing.
+Short, specific what-ifs that do not imply a rule change. "How far did it go?" → MFE report. "Where did it touch?" → path. These are descriptive, not prescriptive. They do not need the framing.
 
-The caveat is for RULE-SHAPED what-ifs (2R target, ATR trail, BE pin)
-that the user could apply from now on.
+The caveat is for RULE-SHAPED what-ifs (2R target, ATR trail, BE pin) that the user could apply from now on.

@@ -1,11 +1,8 @@
 # Alert-DSL pattern library
 
-Ready-to-paste expression templates for common user intents.
-`scripts/validate.py` validates every one of them.
+Ready-to-paste expression templates for common user intents. `scripts/validate.py` validates every one of them.
 
-Replace `<SYM>` with an exact contract symbol (`ESU6`, `BTC/USD`),
-`<ACCT>` with an account name (`DEMO-ACCOUNT-1`), `<LVL>` with a price, and
-`<N>` with a dollar amount.
+Replace `<SYM>` with an exact contract symbol (`ESU6`, `BTC/USD`). Replace `<ACCT>` with an account name (`DEMO-ACCOUNT-1`). Replace `<LVL>` with a price. Replace `<N>` with a dollar amount.
 
 ## 1. Price cross (up)
 
@@ -144,8 +141,7 @@ currentRate(EUR) > 1.10
 
 ## 16. Reaction-window bracket (event-watch hook)
 
-Intent: "Wide bracket for a CPI release — size the offset to the
-measured reaction, not a fixed number."
+Intent: "Wide bracket for a CPI release — size the offset to the measured reaction, not a fixed number."
 
 ```
 lastPrice(<SYM>) > <ENTRY + REACTION_SIZE> OR lastPrice(<SYM>) < <ENTRY - REACTION_SIZE>

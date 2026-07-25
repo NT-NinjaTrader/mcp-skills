@@ -8,22 +8,15 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-Coach, not cop. Review a proposed or current trade against common-
-sense risk hygiene and the user's own behavioral history. Flags,
-explains, leaves the decision to the user.
+Coach, not cop. Review a proposed or current trade against common-sense risk hygiene and the user's own behavioral history. Flags, explains, leaves the decision to the user.
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers. Account names are
-unique to one server. Once the workflow resolves an account on a
-server, every downstream call — `my_portfolio`, `market_snapshot`,
-`place_order`, `create_alert`, history tools, etc. — must go through
-that same server. Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once the workflow resolves an account on a server, every downstream call must go through that same server. Examples include `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, and the history tools. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `fill_history` — recent fills for pairing
   into round-trip trades.
@@ -59,9 +52,7 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ### 2. Gather recent trades
 
-**Account resolution.** `<acct>` below must come from conversation
-context or `user_profile().accounts[].name`. The MCP requires
-`account=` and fails without it.
+**Account resolution.** `<acct>` below must come from conversation context or `user_profile().accounts[].name`. The MCP requires `account=` and fails without it.
 
 ```
 fill_history(
@@ -73,17 +64,14 @@ fill_history(
 
 (`startDate`/`endDate` accept `YYYY-MM-DD` or natural terms.)
 
-Run `trade-journal`'s `streaks.py` on the `fill_history` result to get
-round-trip pairs. Save the tool result to a file. Pass its path with
-`--file`. Never re-type or inline a large JSON payload in the command.
+Run `trade-journal`'s `streaks.py` on the `fill_history` result to get round-trip pairs. Save the tool result to a file. Pass its path with `--file`. Never re-type or inline a large JSON payload in the command.
 
 ```bash
 python3 ../trade-journal/scripts/streaks.py --file fill_history.json \
     --value-per-point-map ES:50 MES:5 NQ:20 MNQ:2
 ```
 
-Take the trades-list from that output (each has `pnl_usd`,
-`entry_time`, `exit_time`, `symbol`, `qty`).
+Take the trades-list from that output (each has `pnl_usd`, `entry_time`, `exit_time`, `symbol`, `qty`).
 
 ### 3. Run the detectors
 
@@ -101,16 +89,11 @@ Input shape:
 }
 ```
 
-Output: list of flags + session summary. See
-`references/antipatterns.md` for the 5 flags and how to narrate
-each. All detectors return null silently when inputs are
-insufficient — no flag means "nothing to say", not "all clear".
+Output: list of flags + session summary. See `references/antipatterns.md` for the 5 flags and how to narrate each. All detectors return null silently when inputs are insufficient — no flag means "nothing to say", not "all clear".
 
 ### 4. Load the checklist (when user asked "should I take this")
 
-Read `references/checklist.yml` — 8 items ranging from
-"thesis stated?" to "are we past 50% of daily loss budget?". Walk
-through each, combining:
+Read `references/checklist.yml` — 8 items ranging from "thesis stated?" to "are we past 50% of daily loss budget?". Walk through each, combining:
 - `conversation` items — ask the user directly
 - `pretrade-risk.output` items — already computed
 - `detect.py` items — already in flags
@@ -118,12 +101,7 @@ through each, combining:
 
 ### 5. Narrate
 
-Combine checklist findings + detector flags into one short
-narrative. Lead with the HIGH severity flags. Suggest concrete
-actions: pause, halve size, skip this one, proceed with eyes
-open. **Never tell the user to stop.** Hard limits are server-side.
-The user configures them through `update_risk_settings`. The user's
-account already enforces its configured limits.
+Combine checklist findings + detector flags into one short narrative. Lead with the HIGH severity flags. Suggest concrete actions: pause, halve size, skip this one, proceed with eyes open. **Never tell the user to stop.** Hard limits are server-side. The user configures them through `update_risk_settings`. The user's account already enforces its configured limits.
 
 ## Tone and degree of freedom
 

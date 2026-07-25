@@ -1,11 +1,8 @@
 # Changelog
 
-Every release of the NinjaTrader trading skills appears here.
-The version in this file matches the version each plugin manifest carries.
+Every release of the NinjaTrader trading skills appears here. The version in this file matches the version each plugin manifest carries.
 
-Claude Code keys its update cache on the plugin version.
-A release therefore always moves the version, or an installed copy never
-receives the change.
+Claude Code keys its update cache on the plugin version. A release therefore always moves the version, or an installed copy never receives the change.
 
 ## 0.1.0
 

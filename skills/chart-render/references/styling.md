@@ -1,8 +1,6 @@
 # Styling conventions
 
-The defaults match the skill's built-in palette. Load this file only
-when the user asks to customize. Most invocations can use the
-defaults.
+The defaults match the skill's built-in palette. Load this file only when the user asks to customize. Most invocations can use the defaults.
 
 ## Palette
 
@@ -21,9 +19,7 @@ Used across all three scripts:
 | Zero / reference line | `#888888` | `equity_curve.py` ZERO_LINE_COLOR |
 | Level labels | `#444444` | `candles.py` horizontal-level annotation |
 
-These colors work for accessibility. They read on both light and
-dark backgrounds. Do not use pure red or green. They vibrate against
-each other on some displays.
+These colors work for accessibility. They read on both light and dark backgrounds. Do not use pure red or green. They vibrate against each other on some displays.
 
 ## Sizing
 
@@ -35,16 +31,11 @@ Default figure sizes per script:
 | `profile_chart.py` | 8 × 10 | 140 | Tall for price range; narrow for volume magnitudes |
 | `equity_curve.py` | 12 × 5 | 140 | Wide for time; modest height (P&L is 1D signal) |
 
-Override these with `--width`, `--height`, and `--dpi`. The minimum
-useful DPI for transcript display is 100. 140 is crisp, but not huge.
+Override these with `--width`, `--height`, and `--dpi`. The minimum useful DPI for transcript display is 100. 140 is crisp, but not huge.
 
 ## Typography
 
-Matplotlib defaults are fine. This skill ships no custom fonts, and
-no script sets a font family. Every chart renders in the Matplotlib
-default font. A brand font is not available today. The scripts expose
-no font flag, so a reader cannot change the font from the command
-line.
+Matplotlib defaults are fine. This skill ships no custom fonts, and no script sets a font family. Every chart renders in the Matplotlib default font. A brand font is not available today. The scripts expose no font flag, so a reader cannot change the font from the command line.
 
 ## Axes
 

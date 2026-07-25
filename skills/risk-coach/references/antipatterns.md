@@ -1,8 +1,6 @@
 # Anti-patterns — detected by `scripts/detect.py`
 
-Five behavioral patterns the skill watches for. Each maps to one
-detector in `detect.py`. The table tells you what triggers it, what
-severity means, and how to narrate the flag.
+Five behavioral patterns the skill watches for. Each maps to one detector in `detect.py`. The table tells you what triggers it, what severity means, and how to narrate the flag.
 
 ## Table of contents
 
@@ -20,25 +18,17 @@ severity means, and how to narrate the flag.
 | `med` | Consider pausing or reducing | Explicit suggestion, user decides |
 | `high` | Strong case for stopping now | Foreground the flag. Suggest concrete action (pause, halve size, flatten) |
 
-**This skill never blocks. It explains.** Hard limits live in
-`update_risk_settings.dailyLossLimit` server-side.
+**This skill never blocks. It explains.** Hard limits live in `update_risk_settings.dailyLossLimit` server-side.
 
 ---
 
 ## 1. revenge_trade
 
-**Detector:** last closed trade was a loss AND time since close is
-under `--revenge-window-min` (default 5).
+**Detector:** last closed trade was a loss AND time since close is under `--revenge-window-min` (default 5).
 
-**Why it matters:** entering a new trade soon after a loss is a
-well-documented emotional pattern — a one-more-shot reflex, not a
-reasoned setup.
+**Why it matters:** a new trade soon after a loss follows a well-documented emotional pattern. The trade is a one-more-shot reflex, not a reasoned setup.
 
-**Compute the real number before you narrate one.** Pull the user's
-own trades from `trade-debrief` (or `performance_summary`). Compare
-their win rate on trades entered within the revenge window against
-their overall win rate. Cite "your last N", per this skill's own
-citation rule (see SKILL.md). Never assert a fixed industry rate.
+**Compute the real number before you narrate one.** Pull the user's own trades from `trade-debrief` (or `performance_summary`). Compare their win rate on trades entered within the revenge window against their overall win rate. Cite "your last N", per this skill's own citation rule (see SKILL.md). Never assert a fixed industry rate.
 
 **Narrate:**
 > "You're 4 min after that -\$225 NQ loss. Your last 8 trades in this
@@ -54,13 +44,9 @@ citation rule (see SKILL.md). Never assert a fixed industry rate.
 
 ## 2. losing_streak
 
-**Detector:** last N trades were all losses. N >= `--streak-min`
-(default 3).
+**Detector:** last N trades were all losses. N >= `--streak-min` (default 3).
 
-**Why it matters:** 3+ consecutive losses at any size signals an
-edge mismatch with current conditions. Either the market regime
-shifted, the setup does not work today, or the trader is off-rhythm.
-Continuing at full size compounds the damage.
+**Why it matters:** 3+ consecutive losses at any size signals an edge mismatch with current conditions. Either the market regime shifted, the setup does not work today, or the trader is off-rhythm. Continuing at full size compounds the damage.
 
 **Narrate:**
 > "Last 3 trades: -\$150, -\$100, -\$225. Total -\$475. Either the
@@ -74,12 +60,9 @@ Continuing at full size compounds the damage.
 
 ## 3. overtrade_count
 
-**Detector:** today's trade count >= `--overtrade-threshold`
-(default 5).
+**Detector:** today's trade count >= `--overtrade-threshold` (default 5).
 
-**Why it matters:** most retail futures traders have their best
-sessions on 1-3 trades. Beyond 5 trades, selection quality drops.
-The trader takes setups they would not take at trade 1.
+**Why it matters:** most retail futures traders have their best sessions on 1-3 trades. Beyond 5 trades, selection quality drops. The trader takes setups they would not take at trade 1.
 
 **Narrate:**
 > "5 trades today already. Pull up `performance_summary` — your
@@ -90,20 +73,15 @@ The trader takes setups they would not take at trade 1.
 - `med` when count is in `[threshold, threshold*1.5)`
 - `high` when count is `>= threshold * 1.5` (e.g., 8+ on default 5)
 
-**Tuning:** user's own baseline is better than a hardcoded threshold.
-If `performance_summary` shows the user's median trades-per-day, use
-`ceil(median * 2)` as the threshold.
+**Tuning:** user's own baseline is better than a hardcoded threshold. If `performance_summary` shows the user's median trades-per-day, use `ceil(median * 2)` as the threshold.
 
 ---
 
 ## 4. size_drift
 
-**Detector:** `proposed.qty >= median(recent qty) * factor` (default
-factor 2.0).
+**Detector:** `proposed.qty >= median(recent qty) * factor` (default factor 2.0).
 
-**Why it matters:** doubling up after a loss streak is the classic
-recipe for a big red day. Size-drift captures the mechanical-but-
-emotional move of "I'll make it back in one."
+**Why it matters:** doubling up after a loss streak is the classic recipe for a big red day. Size-drift captures the mechanical-but-emotional move of "I'll make it back in one."
 
 **Narrate:**
 > "Proposed 6 contracts. Your recent median is 2 — that's 3× normal.
@@ -115,21 +93,15 @@ emotional move of "I'll make it back in one."
   default 2.0 threshold.
 - `high` when multiple is `>= factor*1.5` — e.g., 3× on default.
 
-**Edge case:** if `len(recent) < 3`, detector returns null — too
-little baseline.
+**Edge case:** if `len(recent) < 3`, detector returns null — too little baseline.
 
 ---
 
 ## 5. hour_edge
 
-**Detector:** win rate at current UTC hour across `recent_trades` is
-below `--hour-edge-cutoff` (default 0.40), with enough samples
-(`--hour-edge-min-samples`, default 5).
+**Detector:** win rate at current UTC hour across `recent_trades` is below `--hour-edge-cutoff` (default 0.40), with enough samples (`--hour-edge-min-samples`, default 5).
 
-**Why it matters:** many traders have strong hour-of-day edges
-(e.g., NY open, London open) and anti-edges (lunch, overnight).
-A trade outside edge hours does not mean it loses. It means the
-statistical context is less favorable.
+**Why it matters:** many traders have strong hour-of-day edges (e.g., NY open, London open) and anti-edges (lunch, overnight). A trade outside edge hours does not mean it loses. It means the statistical context is less favorable.
 
 **Narrate:**
 > "Win rate at UTC 18:00 across your last 12 trades: 33% (4W/8L).
@@ -138,8 +110,7 @@ statistical context is less favorable.
 **Severity:**
 - `med` — always. Single-hour stats are too noisy for `high`.
 
-**Edge case:** if samples < `min_samples`, detector returns null
-(silent). This skill does NOT flag low-confidence hour stats.
+**Edge case:** if samples < `min_samples`, detector returns null (silent). This skill does NOT flag low-confidence hour stats.
 
 ---
 
@@ -163,6 +134,4 @@ statistical context is less favorable.
   = trend_up`). This requires market-context integration per trade.
   This is easy to add. SKILL.md calls it out as "check context first".
 
-When any of these come up in conversation, narrate without a
-scripted detector — the coach-not-cop posture supports prose-only
-signals.
+When any of these come up in conversation, narrate without a scripted detector — the coach-not-cop posture supports prose-only signals.

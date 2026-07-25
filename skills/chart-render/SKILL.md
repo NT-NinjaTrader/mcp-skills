@@ -8,16 +8,11 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-Pattern questions ("is this a breakout?", "what did the profile look
-like?", "am I up for the week?") get visual answers. Three static
-PNG renderings: candles, volume profile, equity curve. Data in JSON
-on stdin, path on --output, PNG on disk.
+Pattern questions ("is this a breakout?", "what did the profile look like?", "am I up for the week?") get visual answers. Three static PNG renderings: candles, volume profile, equity curve. Data in JSON on stdin, path on --output, PNG on disk.
 
 ## Environment routing
 
-Symbol/market data only — no account binding.
-A sibling skill's account resolution might already pin the session to demo (simulation) or live.
-If so, stay on that same MCP server.
+Symbol/market data only — no account binding. A sibling skill's account resolution might already pin the session to demo (simulation) or live. If so, stay on that same MCP server.
 
 ## Dependencies
 
@@ -30,8 +25,7 @@ If so, stay on that same MCP server.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `market_history` — bars for candles, profile
   histogram
@@ -66,9 +60,7 @@ market_history(
 )
 ```
 
-`from` requires `to`. If you pass only one, it errors. For a
-"last N bars" intent, pass `count=` instead of a time range. The two
-are mutually exclusive.
+`from` requires `to`. If you pass only one, it errors. For a "last N bars" intent, pass `count=` instead of a time range. The two are mutually exclusive.
 
 Optionally also:
 - `market-context`'s `vwap.py` output for the VWAP series
@@ -84,12 +76,7 @@ Optionally also:
  "poc": ..., "vah": ..., "val": ...}
 ```
 
-**`profile.py` output is already in absolute prices.** The
-`bar.open + offset × tickSize` reconstruction happens inside the
-script. Pass POC / VAH / VAL straight through. Do **not** apply the
-tick-offset conversion again. Otherwise, every horizontal line
-renders shifted by `value × tickSize` away from where it should sit
-on the chart, with no error to flag the mistake.
+**`profile.py` output is already in absolute prices.** The `bar.open + offset × tickSize` reconstruction happens inside the script. Pass POC / VAH / VAL straight through. Do **not** apply the tick-offset conversion again. Otherwise, every horizontal line renders shifted by `value × tickSize` away from its correct position on the chart. The script gives no error to flag the mistake.
 
 **Equity curve:**
 
@@ -97,20 +84,15 @@ on the chart, with no error to flag the mistake.
 fill_history(account=..., startDate=<YYYY-MM-DD>, endDate=<YYYY-MM-DD>)
 ```
 
-(`startDate`/`endDate` are date-level; natural terms like `"this week"`
-also work.)
+(`startDate`/`endDate` are date-level; natural terms like `"this week"` also work.)
 
-Pipe through `trade-journal/scripts/streaks.py` to get round-trip
-trades with `pnl_usd`.
+Pipe through `trade-journal/scripts/streaks.py` to get round-trip trades with `pnl_usd`.
 
 ### 3. Render
 
-Save the source JSON to a file.
-Pass its path with `--file`.
-Never re-type or inline a large JSON payload in the command.
+Save the source JSON to a file. Pass its path with `--file`. Never re-type or inline a large JSON payload in the command.
 
-Run each script with `uv run`.
-`uv run` reads the PEP 723 metadata block in the script and installs matplotlib for you.
+Run each script with `uv run`. `uv run` reads the PEP 723 metadata block in the script and installs matplotlib for you.
 
 ```bash
 uv run scripts/candles.py --file market_history.json --output /tmp/chart.png
@@ -121,15 +103,11 @@ uv run scripts/equity_curve.py --file trades.json --output /tmp/equity.png \
 
 If `uv` is not available, use `python3` instead. Install matplotlib first.
 
-**Output path:** pick `/tmp/<session_id>_<name>.png` by default. The
-rendered image travels via the transcript, so the file itself is
-ephemeral.
+**Output path:** pick `/tmp/<session_id>_<name>.png` by default. The rendered image travels via the transcript, so the file itself is ephemeral.
 
 ### 4. Display inline + narrate
 
-Use the Read tool on the output PNG path. It returns the image
-inline in the transcript. Pair it with 2-3 sentences of narrative
-that name what the picture shows.
+Use the Read tool on the output PNG path. It returns the image inline in the transcript. Pair it with 2-3 sentences of narrative that name what the picture shows.
 
 ## Input shapes
 
@@ -146,10 +124,7 @@ that name what the picture shows.
 }
 ```
 
-All of `vwap`, `fills`, `levels` are optional. `bars` required.
-`fill_history`'s real field is `quantity`, not `qty` — this reshape
-target keeps that name. `candles.py`'s fill markers do not read the
-field at all; it renders only `timestamp`, `price`, and `action`.
+All of `vwap`, `fills`, `levels` are optional. `bars` required. `fill_history`'s real field is `quantity`, not `qty` — this reshape target keeps that name. `candles.py`'s fill markers do not read the field at all; it renders only `timestamp`, `price`, and `action`.
 
 ### `profile_chart.py`
 
@@ -180,10 +155,7 @@ Trades must be sorted oldest-first by exit_time.
 
 ## Sizing and styling
 
-The defaults are deliberately readable. When the user does not ask
-for a specific size or style, use them. See `references/styling.md`
-for palette, DPI guidance, and override patterns. Load it only when
-the user asks for customization.
+The defaults are deliberately readable. When the user does not ask for a specific size or style, use them. See `references/styling.md` for palette, DPI guidance, and override patterns. Load it only when the user asks for customization.
 
 ## Output idioms
 

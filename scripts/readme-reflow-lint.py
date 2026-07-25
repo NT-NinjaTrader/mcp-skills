@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""readme-reflow-lint.py — check that a README keeps reflowed paragraphs.
+"""readme-reflow-lint.py — check that a markdown file keeps reflowed paragraphs.
 
-`README.md` is exempt from `scripts/ste-lint.py`, because it is human-facing
-prose rather than model-facing instructions. See AGENTS.md § Writing style
-for README.md. This tool takes over the gate, so the file is never ungated.
+The rule. A prose paragraph occupies one source line. Write the paragraph as
+one line, and let the renderer wrap it for the reader.
 
-It finds one thing: a prose paragraph written one sentence per line. That
-style reads as a list, and every comparable public project reflows instead.
+The tool finds any hard line break inside a prose paragraph. That covers two
+styles this repository does not use:
 
-The rule. Inside a prose paragraph, a line must not end at a sentence
-boundary while another prose line follows in the same paragraph. Write the
-paragraph as one source line, and let the renderer wrap it.
+  - one sentence per line, which reads as a list,
+  - a wrap at 80 characters, which breaks a sentence in the middle and hides
+    an over-long sentence from `scripts/ste-lint.py`.
+
+An earlier rule flagged only a break at a sentence boundary, so it caught the
+first style and missed the second.
+
+The tool gates every markdown file, whichever writing style the file follows.
+A model-facing file also answers to `scripts/ste-lint.py`. `README.md` is
+exempt from that tool, so this one is the only gate it has.
 
 The tool ignores a construct where a line break carries meaning:
 
@@ -39,11 +45,6 @@ from pathlib import Path
 
 PROG = "readme-reflow-lint.py"
 
-# A sentence-final line: ends in . ! or ? and is not an abbreviation or a
-# version number. A colon does not count, because a colon legitimately
-# introduces a following block.
-SENTENCE_END_RE = re.compile(r"[.!?][)\"'”]?$")
-
 # A line whose break is structural, so the rule does not apply.
 STRUCTURAL_RE = re.compile(
     r"""^\s*(
@@ -52,16 +53,15 @@ STRUCTURAL_RE = re.compile(
         | \d+[.)]\s           # ordered item
         | \|                  # table row
         | >                   # blockquote or alert callout
-        | <                   # HTML block
+        # An HTML block, but not an autolink. <https://example.com> is prose,
+        # and a paragraph may end on one.
+        | <(?![a-zA-Z][a-zA-Z0-9+.\-]*:)
         | \[[^\]]+\]:         # link-reference definition
         | ---+\s*$            # thematic break or front-matter fence
         | :{3,}               # directive fence
     )""",
     re.VERBOSE,
 )
-
-# An abbreviation that ends in a period but not a sentence.
-ABBREV_RE = re.compile(r"\b(?:e\.g|i\.e|etc|vs|cf|Inc|Ltd|Dr|Mr|Ms|No)\.$", re.IGNORECASE)
 
 
 def iter_paragraphs(lines):
@@ -73,8 +73,19 @@ def iter_paragraphs(lines):
     para = []
     in_fence = False
     fence_marker = ""
+    in_frontmatter = False
     for line_no, raw in enumerate(lines, start=1):
         stripped = raw.strip()
+        # Front matter is YAML, so every line break in it is structural. A
+        # SKILL.md opens with a `name` key and a long `description` key, and
+        # YAML needs each key on its own line.
+        if line_no == 1 and stripped == "---":
+            in_frontmatter = True
+            continue
+        if in_frontmatter:
+            if stripped == "---":
+                in_frontmatter = False
+            continue
         fence = re.match(r"^\s*(`{3,}|~{3,})", raw)
         if fence:
             marker = fence.group(1)[0]
@@ -108,22 +119,24 @@ def iter_paragraphs(lines):
 def check_file(path: Path, max_line_words: int, findings: list) -> None:
     lines = path.read_text(encoding="utf-8").splitlines()
     for para in iter_paragraphs(lines):
+        # A prose paragraph occupies one source line. Any break inside one is
+        # a finding, whether it falls between two sentences or inside one.
+        # Hard wrapping at 80 characters produces the second kind, and the
+        # earlier sentence-boundary rule missed every one of those.
+        #
         # A finding needs at least two prose lines in one paragraph, so the
         # last line of a paragraph never counts.
-        for line_no, text in para[:-1]:
-            if ABBREV_RE.search(text):
-                continue
-            if SENTENCE_END_RE.search(text):
-                findings.append(
-                    (
-                        str(path),
-                        line_no,
-                        "reflow",
-                        "error",
-                        "line ends a sentence while the paragraph continues — "
-                        "join the paragraph into one source line",
-                    )
+        for line_no, _text in para[:-1]:
+            findings.append(
+                (
+                    str(path),
+                    line_no,
+                    "reflow",
+                    "error",
+                    "the paragraph continues on the next line. Join the "
+                    "paragraph into one source line.",
                 )
+            )
         for line_no, text in para:
             words = len(text.split())
             if words > max_line_words:
@@ -142,13 +155,12 @@ def check_file(path: Path, max_line_words: int, findings: list) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(
         prog=PROG,
-        description=(
-            "Check that a README keeps reflowed paragraphs instead of one sentence per line."
-        ),
+        description=("Check that a markdown file keeps each prose paragraph on one source line."),
         epilog=(
             "Examples:\n"
             "  readme-reflow-lint.py README.md\n"
             "  readme-reflow-lint.py --max-line-words 60 README.md\n"
+            "  git ls-files -z '*.md' | xargs -0 readme-reflow-lint.py\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,

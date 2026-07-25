@@ -8,8 +8,7 @@ compatibility: This skill requires the NinjaTrader MCP server, connected through
 
 ## Purpose
 
-Turn "alert me when X" into a valid alert-DSL expression.
-Validate the expression offline, check for duplicates, and submit it via `create_alert.expression`.
+Turn "alert me when X" into a valid alert-DSL expression. Validate the expression offline, check for duplicates, and submit it via `create_alert.expression`.
 
 The DSL has:
 - **37 numeric functions** across 4 entity types (Account 14, Contract 9, Position 13, Currency 1) — see `references/dsl-functions.md`.
@@ -21,16 +20,11 @@ See `references/dsl-grammar.md` for the full grammar.
 
 ## Environment routing
 
-Demo (simulation) and live are two separate MCP servers.
-Account names are unique to one server.
-Once a workflow resolves an account on a server, every downstream call must go through that same server.
-This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc.
-Cross-routing fails or hits the wrong environment.
+Demo (simulation) and live are two separate MCP servers. Account names are unique to one server. Once a workflow resolves an account on a server, every downstream call must go through that same server. This includes `my_portfolio`, `market_snapshot`, `place_order`, `create_alert`, history tools, etc. Cross-routing fails or hits the wrong environment.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `search_contracts` — resolves a bare code to a symbol (the DSL subject must be an exact contract symbol).
 - `my_portfolio` — gives account name context. Prune with `fields=["account.name"]` for just the account name.
@@ -42,31 +36,23 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ### 1. Classify the intent
 
-Use `references/pattern-library.md` as a routing table.
-It has 18 patterns that cover most cases: price cross, breakeven, P&L floor, margin, session break, divergence, FX, and more.
-Pick the closest template.
+Use `references/pattern-library.md` as a routing table. It has 18 patterns that cover most cases: price cross, breakeven, P&L floor, margin, session break, divergence, FX, and more. Pick the closest template.
 
-If the user's intent needs a multi-bar indicator (ATR, RSI, MA, or similar), the DSL cannot express it.
-Snapshot the value now and emit a fixed-price bracket (e.g., `entry ± 2×ATR_now`).
-Tell the user this explicitly.
+If the user's intent needs a multi-bar indicator (ATR, RSI, MA, or similar), the DSL cannot express it. Snapshot the value now and emit a fixed-price bracket (e.g., `entry ± 2×ATR_now`). Tell the user this explicitly.
 
 ### 2. Resolve the symbol
 
-The subject must be an **exact** contract symbol: `ESU6`, not `ES`.
-If the user gave a bare code, resolve it first:
+The subject must be an **exact** contract symbol: `ESU6`, not `ES`. If the user gave a bare code, resolve it first:
 
 ```
 search_contracts(text=<code>)
 ```
 
-Use the `symbol` field.
-`contract-intel` also does this end-to-end.
+Use the `symbol` field. `contract-intel` also does this end-to-end.
 
 ### 3. Compose the expression
 
-Paste a template from `references/pattern-library.md`.
-Substitute the symbol, account, and numeric thresholds.
-Or build the expression from the grammar in `references/dsl-grammar.md`.
+Paste a template from `references/pattern-library.md`. Substitute the symbol, account, and numeric thresholds. Or build the expression from the grammar in `references/dsl-grammar.md`.
 
 ### 4. Validate offline
 
@@ -82,13 +68,9 @@ Checks:
 - Function names in the 37-function catalog
 - Subject regex `[\$@]?[\w\s\-\+/|]+`
 
-Output: `{"valid": true|false, "errors": [...], "warnings": [...],
-"functions_used": [...], "subjects_used": [...]}`.
+Output: `{"valid": true|false, "errors": [...], "warnings": [...], "functions_used": [...], "subjects_used": [...]}`.
 
-If the expression is invalid, fix it and validate it again.
-**Always validate before you submit.**
-A typo still passes `create_alert`, because the server parser accepts it.
-But the alert never fires, because the function or subject does not resolve.
+If the expression is invalid, fix it and validate it again. **Always validate before you submit.** A typo still passes `create_alert`, because the server parser accepts it. But the alert never fires, because the function or subject does not resolve.
 
 ### 5. Check for duplicates — required in every mode, including drafts
 
@@ -96,27 +78,15 @@ But the alert never fires, because the function or subject does not resolve.
 list_alerts(status="Active")
 ```
 
-This duplicate check belongs to alert composition, not to alert submission.
-When the user asks for a draft or a validate-only check ("don't submit it"), still run `list_alerts`.
-Report the duplicate status in the answer.
-A validated draft that collides with an active alert is a footgun: the user may submit it blind later.
-Never present a draft or submit an alert without this check.
+This duplicate check belongs to alert composition, not to alert submission. When the user asks for a draft or a validate-only check ("don't submit it"), still run `list_alerts`. Report the duplicate status in the answer. A validated draft that collides with an active alert is a footgun: the user may submit it blind later. Never present a draft or submit an alert without this check.
 
-`list_alerts` does not return the raw expression string.
-Compare the new alert against each existing alert's `symbol`, `trigger`, and `price` fields instead.
-If an existing alert matches on all three, ask the user for a decision.
-Offer to replace the alert or keep both.
-Never auto-dismiss the duplicate.
+`list_alerts` does not return the raw expression string. Compare the new alert against each existing alert's `symbol`, `trigger`, and `price` fields instead. If an existing alert matches on all three, ask the user for a decision. Offer to replace the alert or keep both. Never auto-dismiss the duplicate.
 
-**Draft-only mode stops here.** Report the expression, the validation result, and the duplicate status.
-Do not call `create_alert`.
+**Draft-only mode stops here.** Report the expression, the validation result, and the duplicate status. Do not call `create_alert`.
 
 ### 6. Submit — wait for user approval first
 
-Show the validated expression and the exact payload below.
-Then stop and wait for the user's approval.
-Never call `create_alert` from this skill before the user approves that payload.
-After the user approves it, submit the payload:
+Show the validated expression and the exact payload below. Then stop and wait for the user's approval. Never call `create_alert` from this skill before the user approves that payload. After the user approves it, submit the payload:
 
 ```
 create_alert(
@@ -127,8 +97,7 @@ create_alert(
 )
 ```
 
-Use `message` for the plain-English translation, so the user sees it in the alerts list.
-Use `validUntil` for time-of-day conditions, because the DSL cannot express them.
+Use `message` for the plain-English translation, so the user sees it in the alerts list. Use `validUntil` for time-of-day conditions, because the DSL cannot express them.
 
 ### 7. Echo back the plain-English translation
 
@@ -144,10 +113,7 @@ Three skills propose alert expressions:
 - **`event-watch`** — proposes a reaction-window bracket around a known volatility event.
 - **`position-watchdog`** — proposes stop-proximity or P&L-floor guards on live positions.
 
-When those skills emit an expression string, the user typically says "submit it" or "go ahead."
-Run the expression through `validate.py`, then through `create_alert` as Mode B.
-**Trust but verify.**
-Never skip validation just because another skill produced the expression.
+When those skills emit an expression string, the user typically says "submit it" or "go ahead." Run the expression through `validate.py` first. Then submit the expression through `create_alert` as Mode B. **Trust but verify.** Never skip validation just because another skill produced the expression.
 
 ## Output idioms
 
@@ -173,11 +139,9 @@ Never skip validation just because another skill produced the expression.
 
 ## Known gotchas
 
-**Subject has NO quotes.** Despite what the `create_alert` MCP docstring shows, the parser rejects `lastPrice("ESU6")`.
-Write `lastPrice(ESU6)` instead.
+**Subject has NO quotes.** Despite what the `create_alert` MCP docstring shows, the parser rejects `lastPrice("ESU6")`. Write `lastPrice(ESU6)` instead.
 
-**No parens around logic.** The parser rejects `(A > B) OR (C < D)`.
-Write `A > B OR C < D` instead.
+**No parens around logic.** The parser rejects `(A > B) OR (C < D)`. Write `A > B OR C < D` instead.
 
 ## Explicit non-goals
 

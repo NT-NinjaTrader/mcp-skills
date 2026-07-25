@@ -7,14 +7,9 @@ Load this when:
 
 ## Full / micro pairs
 
-Most micros trade 1/10th the notional of the full-size contract. Same
-tick size, same underlying index, same expiration cycle — just smaller.
-Use them for finer position sizing, practice, or to round out a
-full-size position.
+Most micros trade 1/10th the notional of the full-size contract. Same tick size, same underlying index, same expiration cycle — just smaller. Use them for finer position sizing, practice, or to round out a full-size position.
 
-Two rows break the 1/10th rule. The `Ratio` column states each pair's
-real ratio, and the `Micro $/point` column states the micro's own point
-value.
+Two rows break the 1/10th rule. The `Ratio` column states each pair's real ratio, and the `Micro $/point` column states the micro's own point value.
 
 | Full | Micro | Underlying | Full margin ≈ | Full $/point | Ratio | Micro $/point |
 |------|-------|------------|---------------|--------------|-------|---------------|
@@ -35,13 +30,9 @@ value.
 - `MNG` covers 2,500 MMBtu of natural gas against `NG`'s 10,000, so it
   is 1/4, not 1/10.
 
-Margins drift with volatility — always prefer `market_snapshot` for the
-live initial-margin number. Rough values above are for LLM narrative
-and cross-checks, not sizing.
+Margins drift with volatility — always prefer `market_snapshot` for the live initial-margin number. Rough values above are for LLM narrative and cross-checks, not sizing.
 
-Fungibility: the `search_contracts` tool's optional `includeFamilySiblings`
-field returns the counterpart of a hit (if any). That is the authoritative
-source. This table is a fallback for when the tool is not called.
+Fungibility: the `search_contracts` tool's optional `includeFamilySiblings` field returns the counterpart of a hit (if any). That is the authoritative source. This table is a fallback for when the tool is not called.
 
 ## Tick intuition
 
@@ -57,56 +48,28 @@ source. This table is a fallback for when the tool is not called.
 | ZN      | 1/64 (0.015625) | $15.625 |
 | ZC, ZW, ZS | 0.25   | $12.50 |
 
-Bond tick fractions are notorious. ZB quotes like `129'16` mean
-`129 + 16/32 = 129.5`. Some feeds show the fractional part as decimal
-(`129.5`), others as the raw ticks (`129'16`). Match the convention of
-the `market_snapshot.lastPrice` field.
+Bond tick fractions are notorious. ZB quotes like `129'16` mean `129 + 16/32 = 129.5`. Some feeds show the fractional part as decimal (`129.5`), others as the raw ticks (`129'16`). Match the convention of the `market_snapshot.lastPrice` field.
 
 ## Settlement types
 
-**Cash-settled** — at expiration, the final value is paid in cash against
-an index reference. No physical product changes hands. Most equity-index
-futures (ES, NQ, YM, RTY and their micros) are cash-settled.
+**Cash-settled** — at expiration, the final value is paid in cash against an index reference. No physical product changes hands. Most equity-index futures (ES, NQ, YM, RTY and their micros) are cash-settled.
 
-**Physical-delivery** — at expiration, the short must deliver the
-underlying asset (oil barrels, corn bushels, bond certificates) to the
-long. Roll well before expiry to avoid accidental delivery. CL, GC, NG,
-ZC, ZW, ZS, ZB, ZN are all physical. **Exceptions:** MCL (micro crude)
-and MNG (micro natural gas) settle financially, unlike their full-size
-CL and NG counterparts.
+**Physical-delivery** — at expiration, the short must deliver the underlying asset (oil barrels, corn bushels, bond certificates) to the long. Roll well before expiry to avoid accidental delivery. CL, GC, NG, ZC, ZW, ZS, ZB, ZN are all physical. **Exceptions:** MCL (micro crude) and MNG (micro natural gas) settle financially, unlike their full-size CL and NG counterparts.
 
-For a retail trader holding physicals close to expiry: **roll**. Most
-brokers will auto-liquidate before delivery anyway, but at a price and
-timing the broker chose, not you.
+For a retail trader holding physicals close to expiry: **roll**. Most brokers will auto-liquidate before delivery anyway, but at a price and timing the broker chose, not you.
 
 ## Rollover conventions
 
-**CME quarterlies** — ES, NQ, YM, RTY: March (H), June (M), September (U),
-December (Z). Rollover window starts ~8 business days before expiry,
-mostly finishes 2 days before. Liquidity shifts to the next quarter.
+**CME quarterlies** — ES, NQ, YM, RTY: March (H), June (M), September (U), December (Z). Rollover window starts ~8 business days before expiry, mostly finishes 2 days before. Liquidity shifts to the next quarter.
 
-**Monthly energy** — CL, NG: monthly contracts (every month letter).
-Expire late in the month preceding the contract month (ugh): CLU6
-expires in late August, not September. Always check `expirationDate` from
-the snapshot, never infer from the symbol.
+**Monthly energy** — CL, NG: monthly contracts (every month letter). Expire late in the month preceding the contract month (ugh): CLU6 expires in late August, not September. Always check `expirationDate` from the snapshot, never infer from the symbol.
 
-**Metals** — GC, SI: primary months differ (GC is Feb/Apr/Jun/Aug/Dec,
-SI is Mar/May/Jul/Sep/Dec). Others exist but are not liquid.
+**Metals** — GC, SI: primary months differ (GC is Feb/Apr/Jun/Aug/Dec, SI is Mar/May/Jul/Sep/Dec). Others exist but are not liquid.
 
-**Grains** — ZC, ZW: H/K/N/U/Z (Mar/May/Jul/Sep/Dec) are the liquid
-months. ZS (soybeans) uses a different cycle: F/H/K/N/Q/U/X (Jan/
-Mar/May/Jul/Aug/Sep/Nov) — it has no December contract. Avoid the
-off-months for each product.
+**Grains** — ZC, ZW: H/K/N/U/Z (Mar/May/Jul/Sep/Dec) are the liquid months. ZS (soybeans) uses a different cycle: F/H/K/N/Q/U/X (Jan/ Mar/May/Jul/Aug/Sep/Nov) — it has no December contract. Avoid the off-months for each product.
 
-Use `resolve.py` and `rollover.py` to avoid memorizing any of this —
-they read live OI from `market_snapshot` and make the call. This
-glossary is for narration context ("you're close to rollover" / "cash-
-settled so no delivery risk") not for routing decisions.
+Use `resolve.py` and `rollover.py` to avoid memorizing any of this — they read live OI from `market_snapshot` and make the call. This glossary is for narration context ("you're close to rollover" / "cash-settled so no delivery risk") not for routing decisions.
 
 ## Event contracts (Kalshi)
 
-Kalshi event contracts ("will NFP print above 200k?") have a different
-shape than futures. They do not roll. Each market has a single
-resolution date. Detect a Kalshi entry by its resource URI
-(`tradovate://kalshi-events`), not by a `productType` value. Use the
-`kalshi-events` MCP resource, not `search_contracts`, for discovery.
+Kalshi event contracts ("will NFP print above 200k?") have a different shape than futures. They do not roll. Each market has a single resolution date. Detect a Kalshi entry by its resource URI (`tradovate://kalshi-events`), not by a `productType` value. Use the `kalshi-events` MCP resource, not `search_contracts`, for discovery.

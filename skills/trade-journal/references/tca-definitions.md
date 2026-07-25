@@ -22,9 +22,7 @@ Negative slippage means price improvement — favorable execution.
 
 ### Arrival mid
 
-Midpoint of bid/ask at the bar that contains the **order submit
-time** (`arrivalTimestamp` in the fill payload). When bid/ask has no
-quote, fall back to the bar's close.
+Midpoint of bid/ask at the bar that contains the **order submit time** (`arrivalTimestamp` in the fill payload). When bid/ask has no quote, fall back to the bar's close.
 
 - This shows what the market offered before the order queued or
   routed to the exchange. It is a decision-quality benchmark.
@@ -33,17 +31,13 @@ quote, fall back to the bar's close.
 
 ### Interval VWAP (volume-weighted average price)
 
-Volume-weighted typical price `(H+L+C)/3`, across bars whose
-timestamp falls within `[fill − window, fill + window]`. The default
-half-width is 60s in `slippage.py`. Tune it with
-`--vwap-window-seconds`.
+Volume-weighted typical price `(H+L+C)/3`, across bars whose timestamp falls within `[fill − window, fill + window]`. The default half-width is 60s in `slippage.py`. Tune it with `--vwap-window-seconds`.
 
 - This approximates "what the crowd paid" in the same window.
 - It gives a better signal when the arrival mid is unavailable, for
   example on a market order with no explicit queue time.
 
-**The script reports ticks via `slippage_ticks = slippage_vs_mid / tick_size`.**
-A buy of ES that fills 0.75 above the arrival mid is 3 ticks adverse.
+**The script reports ticks via `slippage_ticks = slippage_vs_mid / tick_size`.** For example, a buy of ES fills 0.75 above the arrival mid. The result is 3 ticks adverse.
 
 ## Round-trip pairing (streaks.py)
 
@@ -62,9 +56,7 @@ FIFO per symbol:
   Partial-exit fills produce multiple smaller completed trades, one
   per close.
 
-**Consequence:** the `trades` count is not fills/2 when a trader
-pyramids a position or partially scales out. See `scale-manager` for
-scaling-specific analytics.
+**Consequence:** the `trades` count is not fills/2 when a trader pyramids a position or partially scales out. See `scale-manager` for scaling-specific analytics.
 
 ## P&L math
 
@@ -74,14 +66,9 @@ pnl_points = exit_price − entry_price          (long)
 pnl_usd    = pnl_points × value_per_point × qty
 ```
 
-`value_per_point` comes from `--value-per-point` for a uniform
-value, or `--value-per-point-map` for a per-product-root value (for
-example, `ES:50 MES:5 NQ:20`). The product root is the symbol
-without its trailing digits and month letter. For example, `ESZ6`
-becomes `ES`, and `MNQZ6` becomes `MNQ`.
+`value_per_point` comes from `--value-per-point` for a uniform value, or `--value-per-point-map` for a per-product-root value (for example, `ES:50 MES:5 NQ:20`). The product root is the symbol without its trailing digits and month letter. For example, `ESZ6` becomes `ES`, and `MNQZ6` becomes `MNQ`.
 
-`fill_history` has no commission or fee field. `pnl_usd` is gross
-P&L — it does not deduct commissions.
+`fill_history` has no commission or fee field. `pnl_usd` is gross P&L — it does not deduct commissions.
 
 ## Streak semantics
 
@@ -94,13 +81,9 @@ P&L — it does not deduct commissions.
 
 ## By-hour bucketing
 
-Trades bucket by **entry-time hour in UTC** (`%H` of the first open
-fill for each trade). The key uses two-digit padding (`"14"`, not
-`14`), so its JSON sort order matches chronological order.
+Trades bucket by **entry-time hour in UTC** (`%H` of the first open fill for each trade). The key uses two-digit padding (`"14"`, not `14`), so its JSON sort order matches chronological order.
 
-Why UTC: fills come back in UTC per MCP convention. If the user
-asks, convert to local ET in the narration. The bucket key itself
-stays in UTC, for stability across DST transitions.
+Why UTC: fills come back in UTC per MCP convention. If the user asks, convert to local ET in the narration. The bucket key itself stays in UTC, for stability across DST transitions.
 
 ## Known gaps
 

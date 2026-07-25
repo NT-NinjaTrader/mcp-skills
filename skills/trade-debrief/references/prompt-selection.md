@@ -1,8 +1,6 @@
 # Prompt selection — routing table
 
-Map user intent to the right prompt template. Prompts live in
-`references/prompts/`. This skill bundles them and uses them verbatim.
-Do not modify them.
+Map user intent to the right prompt template. Prompts live in `references/prompts/`. This skill bundles them and uses them verbatim. Do not modify them.
 
 ## Intent → prompt map
 
@@ -36,8 +34,7 @@ Do not modify them.
 
 ## How to run a prompt inside Claude Code
 
-These prompts assume an external LLM call pipeline. Inside Claude
-Code, Claude itself IS the LLM. This needs no API plumbing:
+These prompts assume an external LLM call pipeline. Inside Claude Code, Claude itself IS the LLM. This needs no API plumbing:
 
 1. Assemble the report YAML via `scripts/assemble_report.py`.
 2. Load the chosen prompt file (e.g., `references/prompts/07_daily_debrief.md`)
@@ -48,26 +45,19 @@ Code, Claude itself IS the LLM. This needs no API plumbing:
    citation-required rules apply. Output in the structure the
    prompt specifies.
 
-Do not relay this through an external API call. Claude Code is the
-LLM. Read the prompt and follow it.
+Do not relay this through an external API call. Claude Code is the LLM. Read the prompt and follow it.
 
 ## Length guidance
 
-Each prompt's STRICT RULES govern the output length. For example, 07
-allows a maximum of 250 words. Respect those rules.
+Each prompt's STRICT RULES govern the output length. For example, 07 allows a maximum of 250 words. Respect those rules.
 
 ## Schema compatibility notes
 
-The bundled prompts carry a `compatible_report_versions: [1, 2]` tag.
-The assembled YAML declares `schema_version: 1`, within that range.
-When prompts advance to v3, validate that `assemble_report.py` still
-produces a schema-1-or-2 output before the upgrade.
+The bundled prompts carry a `compatible_report_versions: [1, 2]` tag. The assembled YAML declares `schema_version: 1`, within that range. When prompts advance to v3, validate that `assemble_report.py` still produces a schema-1-or-2 output before the upgrade.
 
 ## When a prompt fails (fact-only violation)
 
-If the output cites a field that is `null` in the report (common
-with `timeline`-dependent claims), treat it as a prompt bug. Then do
-this:
+If the output cites a field that is `null` in the report, treat it as a prompt bug. Such a citation is common with `timeline`-dependent claims. Then do this:
 
 1. Re-run with an explicit note: "timeline[] is null in this report —
    do not cite minute-by-minute volume or POC fields."

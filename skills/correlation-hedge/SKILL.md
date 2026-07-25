@@ -15,14 +15,11 @@ Two linked jobs:
 
 ## Environment routing
 
-Symbol/market data only — no account binding.
-A sibling skill's account resolution might already pin the session to demo (simulation) or live.
-If so, stay on that same MCP server.
+Symbol/market data only — no account binding. A sibling skill's account resolution might already pin the session to demo (simulation) or live. If so, stay on that same MCP server.
 
 ## MCP tools used
 
-Tool names below are bare. The NinjaTrader MCP server provides them.
-Your client adds its own prefix. See `AGENTS.md` at the repo root.
+Tool names below are bare. The NinjaTrader MCP server provides them. Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 - `market_history` — aligned bar closes for two symbols over the lookback window
 - `my_portfolio` — open positions for hedge-mode input (qty, netPrice). Prune with `fields=["positions[].symbol","positions[].netPos","positions[].netPrice","account.netLiq"]`.
@@ -43,16 +40,14 @@ Your client adds its own prefix. See `AGENTS.md` at the repo root.
 
 ### 2. Gather aligned history
 
-Pick a lookback (default 30–90 sessions for cross-family, 5–30
-sessions for within-family):
+Pick a lookback (default 30–90 sessions for cross-family, 5–30 sessions for within-family):
 
 ```
 market_history(symbol=SYM_A, barType="Daily", barSize=1, from=<ISO-8601>, to=<ISO-8601>)
 market_history(symbol=SYM_B, barType="Daily", barSize=1, from=<ISO-8601>, to=<ISO-8601>)
 ```
 
-For hourly bars use `barType="Minute", barSize=60`.
-`from` requires `to`. For "last N bars", pass `count=` instead of a range.
+For hourly bars use `barType="Minute", barSize=60`. `from` requires `to`. For "last N bars", pass `count=` instead of a range.
 
 **Bar-size choice matters:**
 - Daily bars: most stable correlation, regime-level signal
@@ -62,8 +57,7 @@ For hourly bars use `barType="Minute", barSize=60`.
 
 ### 3. Compute correlation + β
 
-Save the two symbols' `market_history` responses to a file (shape `{"series": {SYM_A: [...], SYM_B: [...]}}`) and pass its path with `--file`.
-Never re-type or inline the bar arrays into the command.
+Save the two symbols' `market_history` responses to a file (shape `{"series": {SYM_A: [...], SYM_B: [...]}}`) and pass its path with `--file`. Never re-type or inline the bar arrays into the command.
 
 ```bash
 python3 scripts/correlation.py --file series.json --window 30
@@ -75,14 +69,11 @@ The script aligns bars on shared timestamps, computes log returns, then reports:
 - `vol_A`, `vol_B` — return stdev of each
 - `rolling` (optional, with `--window`) — current r vs rolling mean/stdev + regime flag (`tightening`/`loosening`/`stable`)
 
-**Compare to priors** in `references/hedge-patterns.md`.
-If the live r is way outside the typical range for that pair, call it out.
-The cause may be a regime shift, a data quality issue, or a rare moment.
+**Compare to priors** in `references/hedge-patterns.md`. If the live r is way outside the typical range for that pair, call it out. The cause may be a regime shift, a data quality issue, or a rare moment.
 
 ### 4. Size the hedge (if asked)
 
-**Account resolution.** Position data (qty, direction, basis) comes from `my_portfolio(account=<name>)` — the MCP requires `account=`.
-If the account name is unknown, call `user_profile()` first and pull `accounts[].name` to discover available accounts.
+**Account resolution.** Position data (qty, direction, basis) comes from `my_portfolio(account=<name>)` — the MCP requires `account=`. If the account name is unknown, call `user_profile()` first and pull `accounts[].name` to discover available accounts.
 
 Pull the position + hedge candidate market snapshot, then:
 
@@ -113,14 +104,11 @@ Output fields:
 - `coverage.coverage_pct` — how much of the $ exposure the rounded hedge actually covers
 - `coverage.residual_exposure_dollars` — uncovered $ per 1%
 
-**When `rounded_qty = 0`** or `residual_pct > 30%`, the script emits a `note` that suggests a micro (MES/MNQ/MCL/MGC) for finer sizing.
-Surface that verbatim.
+**When `rounded_qty = 0`** or `residual_pct > 30%`, the script emits a `note` that suggests a micro (MES/MNQ/MCL/MGC) for finer sizing. Surface that verbatim.
 
 ### 5. Multi-candidate hedge comparison
 
-Run `hedge_sizing.py` N times with different candidates.
-Rank by `coverage_pct` near 100% with low `residual_pct`.
-Pick the best trade-off between coverage and rounding precision.
+Run `hedge_sizing.py` N times with different candidates. Rank by `coverage_pct` near 100% with low `residual_pct`. Pick the best trade-off between coverage and rounding precision.
 
 This skill ships no `basket.py` script. Loop over the candidates instead:
 
@@ -132,8 +120,7 @@ done
 
 ### 6. Narrate — with regime context
 
-Pair the sizing output with the live correlation, so the user sees the assumption behind it.
-See `references/regime-caveat.md` for framing patterns.
+Pair the sizing output with the live correlation, so the user sees the assumption behind it. See `references/regime-caveat.md` for framing patterns.
 
 ## Output idioms
 

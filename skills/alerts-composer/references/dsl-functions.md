@@ -1,9 +1,6 @@
 # Alert DSL — function catalog
 
-**Ground truth.** Do not invent functions outside this list.
-This list mirrors every function the server accepts in an alert
-expression today, across the account, contract, position, and currency
-entities.
+**Ground truth.** Do not invent functions outside this list. This list mirrors every function the server accepts in an alert expression today. The list has functions for the account, contract, position, and currency entities.
 
 Total: **37 numeric functions, 0 boolean functions.**
 
@@ -26,8 +23,7 @@ Total: **37 numeric functions, 0 boolean functions.**
 | `futuresOnlyNetLiq` | NetLiq excluding non-futures positions | `futuresOnlyNetLiq(DEMO-ACCOUNT-1) < 8000` |
 | `openCollateralReq` | Collateral required for open orders | `openCollateralReq(DEMO-ACCOUNT-1) > 2000` |
 
-**Subject format:** the exact account name from `my_portfolio.account.name`.
-Do not assume any prefix pattern.
+**Subject format:** the exact account name from `my_portfolio.account.name`. Do not assume any prefix pattern.
 
 ## Contract (9) — subject is contract name
 
@@ -43,15 +39,11 @@ Do not assume any prefix pattern.
 | `lowPrice` | Session low | `lastPrice(ESU6) <= lowPrice(ESU6)` |
 | `settlementPrice` | Prior session settlement | `lastPrice(ESU6) > settlementPrice(ESU6) * 1.01` |
 
-**Subject format:** exact contract symbol — use the `symbol` field from
-`market_snapshot` or `search_contracts` results. Examples: `ESU6`,
-`BTC/USD`, `CLU6`. Do NOT pass bare product codes like `ES` — the
-alert will fail to resolve.
+**Subject format:** exact contract symbol — use the `symbol` field from `market_snapshot` or `search_contracts` results. Examples: `ESU6`, `BTC/USD`, `CLU6`. Do NOT pass bare product codes like `ES` — the alert will fail to resolve.
 
 ## Position (13) — subject is contract name
 
-The alert context looks up the position on the caller's default trading account (by convention).
-Quantity functions are in contracts; USD-suffixed functions are in dollars.
+The alert context looks up the position on the caller's default trading account (by convention). Quantity functions are in contracts; USD-suffixed functions are in dollars.
 
 | Function | Meaning | Example |
 |----------|---------|---------|
@@ -75,15 +67,11 @@ Quantity functions are in contracts; USD-suffixed functions are in dollars.
 |----------|---------|---------|
 | `currentRate` | Current FX rate vs base currency | `currentRate(EUR) > 1.10` |
 
-Base currency is account-dependent. For a USD-funded account,
-`currentRate(EUR) > 1.10` means EUR/USD > 1.10.
+Base currency is account-dependent. For a USD-funded account, `currentRate(EUR) > 1.10` means EUR/USD > 1.10.
 
 ## Boolean functions
 
-**None today.** The grammar supports a `BooleanCall` node, but the
-server accepts no boolean function name. If an expression references a
-boolean function name, the server fails to evaluate it. Do not emit
-boolean calls.
+**None today.** The grammar supports a `BooleanCall` node, but the server accepts no boolean function name. If an expression references a boolean function name, the server fails to evaluate it. Do not emit boolean calls.
 
 ## Which function lives where — quick-pick routing
 
@@ -109,5 +97,4 @@ boolean calls.
   or a separate time-based guard upstream).
 - No string operations or regex matching.
 
-When the user asks for any of these, say the DSL cannot express it.
-Offer the closest single-point proxy instead (e.g., snapshot an ATR band NOW and emit a fixed-price bracket).
+When the user asks for any of these, say the DSL cannot express it. Offer the closest single-point proxy instead (e.g., snapshot an ATR band NOW and emit a fixed-price bracket).

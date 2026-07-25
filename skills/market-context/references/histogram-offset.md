@@ -4,18 +4,13 @@
 
 ## Why this matters
 
-The `market_history` tool returns bars.
-Each bar may carry a `histogram` array when you call the tool with `volumeProfile: true`.
-Each histogram level has three integer fields:
+The `market_history` tool returns bars. Each bar may carry a `histogram` array when you call the tool with `volumeProfile: true`. Each histogram level has three integer fields:
 
 ```json
 { "price": -3, "bid": 120, "offer": 85 }
 ```
 
-`price` here is **not** the actual traded price.
-It is the number of ticks above or below the bar's `open`.
-A reader who treats `price` as an absolute dollar value gets answers off by orders of magnitude.
-Worse, the profile can look plausible but stay wrong.
+`price` here is **not** the actual traded price. It is the number of ticks above or below the bar's `open`. A reader who treats `price` as an absolute dollar value gets answers off by orders of magnitude. Worse, the profile can look plausible but stay wrong.
 
 ## The reconstruction
 
@@ -31,18 +26,13 @@ The actual price for level `i` is:
 actual_price = bar.open + histogram[i].price * tickSize
 ```
 
-The combined volume at that price level is `bid + offer`.
-`bid` counts contracts that traded against the bid.
-`offer` counts contracts that traded against the offer.
+The combined volume at that price level is `bid + offer`. `bid` counts contracts that traded against the bid. `offer` counts contracts that traded against the offer.
 
 ## Why the offset encoding exists
 
-Tick offsets shrink market-data payloads by a lot.
-Most bars fit in ±15 ticks. A signed 16-bit integer per level is enough.
-Absolute prices would need floats or scaled integers, and would make the bar much bigger.
+Tick offsets shrink market-data payloads by a lot. Most bars fit in ±15 ticks. A signed 16-bit integer per level is enough. Absolute prices would need floats or scaled integers, and would make the bar much bigger.
 
-The base price for every offset in a bar is that bar's own `open`.
-Each bar therefore carries its own reference point.
+The base price for every offset in a bar is that bar's own `open`. Each bar therefore carries its own reference point.
 
 ## Obtain the tick size
 
