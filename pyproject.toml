@@ -1,0 +1,63 @@
+[project]
+name = "mcp-skills"
+# This file configures the Python quality tooling. It publishes no
+# package, so it carries no product version. The product version lives
+# in the client manifests, and `scripts/manifest-lint.sh` keeps those
+# five files in step. A second version here would add a sixth place to
+# bump on every release, so leave it at 0.0.0.
+version = "0.0.0"
+description = "Python quality tooling config for the NinjaTrader MCP trading skills."
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Markdown files are in scope by default on this ruff release (it formats
+# fenced Python blocks in place). skills/trade-debrief/references/prompts/
+# holds 7 verbatim prompt files sent to another model as-is — ruff must
+# never rewrite them. Exclude all Markdown repo-wide rather than track an
+# allowlist that would need updates as new skill docs are added.
+extend-exclude = ["*.md"]
+# `extend-exclude` alone only applies when ruff walks a directory (the
+# CI job's `ruff format --check .`). An explicit file path, such as an
+# IDE's format-on-save action, bypasses `extend-exclude` unless
+# `force-exclude` is also set. Set it so the Markdown exclusion above
+# holds for every call shape, not only a directory scan.
+force-exclude = true
+
+[tool.ruff.lint]
+# Pin the rule set explicitly. An unset `select` resolves to a broader,
+# version-dependent set on this ruff release, not the documented E4/E7/E9/F
+# default alone. Explicit selection keeps CI stable across ruff upgrades.
+select = ["E4", "E7", "E9", "F", "I"]
+
+# The pytest and coverage sections below configure the development test
+# suite. The published copy of this repo carries no `tests/` directory
+# and no `scripts/py-cov-gate.py`, so both sections stay inert there.
+# The published CI never calls pytest or coverage. It runs ruff, which
+# reads the `[tool.ruff]` section above.
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
+
+[tool.coverage.run]
+source = [
+    "skills/alerts-composer/scripts",
+    "skills/chart-render/scripts",
+    "skills/contract-intel/scripts",
+    "skills/correlation-hedge/scripts",
+    "skills/event-watch/scripts",
+    "skills/market-context/scripts",
+    "skills/position-watchdog/scripts",
+    "skills/pretrade-risk/scripts",
+    "skills/risk-coach/scripts",
+    "skills/scale-manager/scripts",
+    "skills/trade-debrief/scripts",
+    "skills/trade-journal/scripts",
+    "skills/trade-replay/scripts",
+    "scripts",
+]
+omit = [
+    "*/fixtures/*",
+    "scripts/py-cov-gate.py",
+    "scripts/validate-all.sh",
+]

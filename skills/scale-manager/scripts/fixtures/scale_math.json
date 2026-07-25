@@ -1,0 +1,11 @@
+{
+  "direction": "long",
+  "current_qty": 4,
+  "current_basis": 7150.0,
+  "stop_price": 7141.0,
+  "current_mark": 7164.0,
+  "value_per_point": 50.0,
+  "tick_size": 0.25,
+  "action_qty": 2,
+  "action_price": 7164.0
+}

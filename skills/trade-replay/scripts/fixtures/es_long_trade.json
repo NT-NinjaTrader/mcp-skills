@@ -1,0 +1,28 @@
+{
+  "trade": {
+    "symbol": "ESM6",
+    "direction": "long",
+    "entry_price": 7150.00,
+    "exit_price": 7164.00,
+    "entry_time": "2026-04-20T13:32:00Z",
+    "exit_time": "2026-04-20T14:19:00Z",
+    "qty": 4,
+    "value_per_point": 50.0,
+    "planned_stop_points": 8.0,
+    "actual_exit_price": 7164.00,
+    "actual_exit_time": "2026-04-20T14:19:00Z"
+  },
+  "bars": [
+    {"timestamp": "2026-04-20T13:32:00Z", "open": 7150.00, "high": 7151.50, "low": 7149.75, "close": 7150.50},
+    {"timestamp": "2026-04-20T13:37:00Z", "open": 7150.50, "high": 7154.25, "low": 7149.00, "close": 7153.75},
+    {"timestamp": "2026-04-20T13:42:00Z", "open": 7153.75, "high": 7158.50, "low": 7152.00, "close": 7157.25},
+    {"timestamp": "2026-04-20T13:47:00Z", "open": 7157.25, "high": 7162.00, "low": 7155.00, "close": 7160.50},
+    {"timestamp": "2026-04-20T13:52:00Z", "open": 7160.50, "high": 7166.00, "low": 7158.25, "close": 7164.75},
+    {"timestamp": "2026-04-20T13:57:00Z", "open": 7164.75, "high": 7169.25, "low": 7162.50, "close": 7166.00},
+    {"timestamp": "2026-04-20T14:02:00Z", "open": 7166.00, "high": 7172.50, "low": 7164.25, "close": 7168.75},
+    {"timestamp": "2026-04-20T14:07:00Z", "open": 7168.75, "high": 7170.00, "low": 7163.50, "close": 7165.25},
+    {"timestamp": "2026-04-20T14:12:00Z", "open": 7165.25, "high": 7167.75, "low": 7162.00, "close": 7164.50},
+    {"timestamp": "2026-04-20T14:17:00Z", "open": 7164.50, "high": 7166.25, "low": 7161.75, "close": 7164.00},
+    {"timestamp": "2026-04-20T14:22:00Z", "open": 7164.00, "high": 7164.75, "low": 7160.00, "close": 7161.25}
+  ]
+}

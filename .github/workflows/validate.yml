@@ -1,0 +1,118 @@
+name: validate (public)
+# This workflow covers the gates a checkout of this repository can
+# satisfy. This repository carries no test suite and no coverage gate,
+# so the workflow runs neither.
+#
+# Every job carries a repository guard, so the workflow stays inert in a
+# fork. The guard keeps the file under version control beside the source
+# it validates.
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - run: uv pip install --system matplotlib
+      - run: ./scripts/validate-all.sh
+      - name: skill line-count warning
+        run: |
+          over=$(wc -l skills/*/SKILL.md | awk '$1 > 500 && $2 != "total" {print $2" ("$1" lines)"}')
+          if [ -n "$over" ]; then
+            echo "::warning::SKILL.md over 500 lines: $over"
+          fi
+  skills-ref:
+    # `skills-ref` is an unvetted third-party npm package. One individual
+    # maintains it, its `repository` field is empty, and its dependencies
+    # use caret ranges that resolve at run time. A fork pull request must
+    # never trigger that code on this repo's runner, so this job runs only
+    # for a push or for a pull request from a branch in this repo.
+    if: >-
+      github.repository == 'NT-NinjaTrader/mcp-skills' &&
+      (github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The default shell is `bash -e`, so a bare loop stops at the first
+      # failing skill and hides the rest. Collect every failure instead.
+      - name: validate every skill reference
+        run: |
+          fail=0
+          for d in skills/*/; do
+            npx -y skills-ref@0.1.5 validate "$d" || fail=1
+          done
+          exit $fail
+  manifest-lint:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: ./scripts/manifest-lint.sh
+  ste-lint:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      # `-r` stops xargs from running the linter with no argument when the
+      # match set is empty. `-0` keeps a path with a space intact.
+      - name: ste-lint every markdown file
+        run: git ls-files -z '*.md' | xargs -0 -r python3 scripts/ste-lint.py
+      # ste-lint.py skips README.md, because a README follows the ordinary
+      # technical-writing rules instead. This gate keeps that file covered.
+      - name: reflow-lint the README
+        run: python3 scripts/readme-reflow-lint.py README.md
+  zizmor:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - run: uvx zizmor .github/workflows/
+  shellcheck:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: shellcheck scripts/*.sh
+  python-quality:
+    if: github.repository == 'NT-NinjaTrader/mcp-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - run: uvx ruff check .
+      - run: uvx ruff format --check .

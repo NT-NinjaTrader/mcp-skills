@@ -1,0 +1,36 @@
+{
+  "positions": [
+    {
+      "symbol": "ESU6",
+      "netPos": 4,
+      "netPrice": 7150.0,
+      "openPnL": 1650.0
+    },
+    {
+      "symbol": "NQU6",
+      "netPos": 1,
+      "netPrice": 18250.0,
+      "openPnL": 200.0
+    }
+  ],
+  "workingOrders": [
+    {
+      "id": 5001,
+      "symbol": "ESU6",
+      "action": "Sell",
+      "orderType": "Stop",
+      "quantity": 4,
+      "ordStatus": "Working",
+      "stopPrice": 7140.0
+    },
+    {
+      "id": 5002,
+      "symbol": "ESU6",
+      "action": "Sell",
+      "orderType": "Limit",
+      "quantity": 4,
+      "ordStatus": "Working",
+      "price": 7165.0
+    }
+  ]
+}

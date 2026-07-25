@@ -1,0 +1,44 @@
+{
+  "trades": [
+    {
+      "trade_id": "T-001",
+      "symbol": "ESM6",
+      "direction": "long",
+      "entry_price": 7100.00,
+      "exit_price": 7105.25,
+      "entry_time": "2026-04-20T13:32:00Z",
+      "exit_time": "2026-04-20T13:47:00Z",
+      "qty": 2,
+      "value_per_point": 50.0,
+      "tick_size": 0.25,
+      "planned_stop_points": 4.0,
+      "bars": [
+        {"timestamp": "2026-04-20T13:31:00Z", "high": 7100.50, "low": 7099.75, "close": 7100.00},
+        {"timestamp": "2026-04-20T13:33:00Z", "high": 7103.50, "low": 7099.50, "close": 7102.75},
+        {"timestamp": "2026-04-20T13:37:00Z", "high": 7108.25, "low": 7101.00, "close": 7106.50},
+        {"timestamp": "2026-04-20T13:42:00Z", "high": 7110.00, "low": 7104.50, "close": 7107.25},
+        {"timestamp": "2026-04-20T13:47:00Z", "high": 7107.50, "low": 7104.75, "close": 7105.25},
+        {"timestamp": "2026-04-20T13:50:00Z", "high": 7106.50, "low": 7105.00, "close": 7105.75}
+      ]
+    },
+    {
+      "trade_id": "T-002",
+      "symbol": "NQM6",
+      "direction": "short",
+      "entry_price": 22450.00,
+      "exit_price": 22438.00,
+      "entry_time": "2026-04-20T17:15:00Z",
+      "exit_time": "2026-04-20T17:42:00Z",
+      "qty": 1,
+      "value_per_point": 20.0,
+      "tick_size": 0.25,
+      "planned_stop_points": 30.0,
+      "bars": [
+        {"timestamp": "2026-04-20T17:15:00Z", "high": 22452.00, "low": 22446.00, "close": 22449.50},
+        {"timestamp": "2026-04-20T17:22:00Z", "high": 22465.00, "low": 22445.00, "close": 22460.00},
+        {"timestamp": "2026-04-20T17:32:00Z", "high": 22458.00, "low": 22430.00, "close": 22432.00},
+        {"timestamp": "2026-04-20T17:42:00Z", "high": 22442.00, "low": 22435.00, "close": 22438.00}
+      ]
+    }
+  ]
+}

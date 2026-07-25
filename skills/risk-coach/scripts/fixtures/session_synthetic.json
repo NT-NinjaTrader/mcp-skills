@@ -1,0 +1,17 @@
+{
+  "now_iso": "2026-04-20T18:32:00Z",
+  "proposed": {
+    "symbol": "ESM6",
+    "qty": 6,
+    "direction": "long"
+  },
+  "recent_trades": [
+    {"entry_time": "2026-04-19T14:00:00Z", "exit_time": "2026-04-19T14:25:00Z", "symbol": "ESM6", "qty": 2, "pnl_usd": 150.0},
+    {"entry_time": "2026-04-19T18:10:00Z", "exit_time": "2026-04-19T18:40:00Z", "symbol": "NQM6", "qty": 1, "pnl_usd": -120.0},
+    {"entry_time": "2026-04-19T18:45:00Z", "exit_time": "2026-04-19T19:05:00Z", "symbol": "NQM6", "qty": 2, "pnl_usd": -200.0},
+    {"entry_time": "2026-04-20T13:15:00Z", "exit_time": "2026-04-20T13:40:00Z", "symbol": "ESM6", "qty": 2, "pnl_usd": 180.0},
+    {"entry_time": "2026-04-20T14:20:00Z", "exit_time": "2026-04-20T14:50:00Z", "symbol": "ESM6", "qty": 2, "pnl_usd": -150.0},
+    {"entry_time": "2026-04-20T17:10:00Z", "exit_time": "2026-04-20T17:35:00Z", "symbol": "ESM6", "qty": 2, "pnl_usd": -100.0},
+    {"entry_time": "2026-04-20T18:05:00Z", "exit_time": "2026-04-20T18:28:00Z", "symbol": "ESM6", "qty": 3, "pnl_usd": -225.0}
+  ]
+}

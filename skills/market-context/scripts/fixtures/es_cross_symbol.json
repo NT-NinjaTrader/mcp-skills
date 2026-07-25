@@ -1,0 +1,10 @@
+{
+  "symbol": "ESU6",
+  "barType": "Minute",
+  "barSize": 5,
+  "bars": [
+    {"timestamp": "2026-07-23T13:30:00Z", "open": 7098.25, "high": 7102.50, "low": 7096.00, "close": 7100.00},
+    {"timestamp": "2026-07-23T13:35:00Z", "open": 7100.00, "high": 7122.75, "low": 7099.50, "close": 7120.25},
+    {"timestamp": "2026-07-23T13:40:00Z", "open": 7120.25, "high": 7142.00, "low": 7118.75, "close": 7140.50}
+  ]
+}

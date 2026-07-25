@@ -1,0 +1,12 @@
+{
+  "items": [
+    {"symbol": "ESM6", "timestamp": "2026-04-20T13:32:00Z", "action": "Buy",  "quantity": 2, "price": 7100.00},
+    {"symbol": "ESM6", "timestamp": "2026-04-20T13:47:00Z", "action": "Sell", "quantity": 2, "price": 7105.25},
+    {"symbol": "ESM6", "timestamp": "2026-04-20T14:02:00Z", "action": "Sell", "quantity": 1, "price": 7108.00},
+    {"symbol": "ESM6", "timestamp": "2026-04-20T14:18:00Z", "action": "Buy",  "quantity": 1, "price": 7112.50},
+    {"symbol": "ESM6", "timestamp": "2026-04-20T15:05:00Z", "action": "Buy",  "quantity": 3, "price": 7115.00},
+    {"symbol": "ESM6", "timestamp": "2026-04-20T15:22:00Z", "action": "Sell", "quantity": 3, "price": 7118.50},
+    {"symbol": "NQM6", "timestamp": "2026-04-20T17:15:00Z", "action": "Buy",  "quantity": 1, "price": 22450.00},
+    {"symbol": "NQM6", "timestamp": "2026-04-20T17:42:00Z", "action": "Sell", "quantity": 1, "price": 22438.00}
+  ]
+}

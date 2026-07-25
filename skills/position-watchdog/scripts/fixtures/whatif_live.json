@@ -1,0 +1,11 @@
+{
+  "symbol": "ESU6",
+  "net_pos": 4,
+  "net_price": 7150.0,
+  "last_price": 7158.25,
+  "tick_size": 0.25,
+  "value_per_point": 50.0,
+  "current_stop": 7145.0,
+  "current_target": 7162.0,
+  "daily_loss_budget": 500.0
+}

@@ -1,0 +1,13 @@
+{
+  "data": [
+    {"date": "2026-04-21T12:30:00Z", "eventName": "CPI (Mar)", "importance": 5, "actual": null, "consensus": 0.3, "prior": 0.2},
+    {"date": "2026-04-21T14:00:00Z", "eventName": "Existing Home Sales (Mar)", "importance": 2, "actual": null, "consensus": 4.1, "prior": 4.0},
+    {"date": "2026-04-22T14:30:00Z", "eventName": "EIA Crude Oil Inventories", "importance": 4, "actual": null, "consensus": -1.2, "prior": -0.8},
+    {"date": "2026-04-23T12:30:00Z", "eventName": "Retail Sales (Mar)", "importance": 4, "actual": null, "consensus": 0.4, "prior": 0.6},
+    {"date": "2026-04-23T12:30:00Z", "eventName": "Initial Jobless Claims", "importance": 3, "actual": null, "consensus": 215, "prior": 211},
+    {"date": "2026-04-23T13:45:00Z", "eventName": "German Factory Orders (Feb)", "importance": 2, "actual": null, "consensus": 0.5, "prior": 1.2},
+    {"date": "2026-04-24T18:00:00Z", "eventName": "FOMC Interest Rate Decision", "importance": 5, "actual": null, "consensus": 4.50, "prior": 4.50},
+    {"date": "2026-04-25T12:30:00Z", "eventName": "Nonfarm Payrolls (Apr)", "importance": 5, "actual": null, "consensus": 180, "prior": 175}
+  ],
+  "hasMore": false
+}

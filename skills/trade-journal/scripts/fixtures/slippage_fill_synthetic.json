@@ -1,0 +1,16 @@
+{
+  "fill": {
+    "symbol": "ESM6",
+    "timestamp": "2026-04-20T14:32:07Z",
+    "arrivalTimestamp": "2026-04-20T14:32:03Z",
+    "action": "Buy",
+    "quantity": 2,
+    "price": 7102.50
+  },
+  "bars": [
+    {"timestamp": "2026-04-20T14:31:30Z", "open": 7101.25, "high": 7101.75, "low": 7100.75, "close": 7101.50, "upVolume": 140, "downVolume": 100},
+    {"timestamp": "2026-04-20T14:32:00Z", "open": 7101.50, "high": 7102.75, "low": 7101.25, "close": 7102.25, "upVolume": 260, "downVolume": 150},
+    {"timestamp": "2026-04-20T14:32:30Z", "open": 7102.25, "high": 7103.00, "low": 7102.00, "close": 7102.75, "upVolume": 190, "downVolume": 115},
+    {"timestamp": "2026-04-20T14:33:00Z", "open": 7102.75, "high": 7103.00, "low": 7102.25, "close": 7102.50, "upVolume": 100, "downVolume": 80}
+  ]
+}

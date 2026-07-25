@@ -1,0 +1,80 @@
+# Pre-trade checklist — load when the user asks "should I take this?"
+#
+# Each item is a yes/no question the skill asks the user or checks
+# against available data. A `no` or `unclear` does not block the
+# trade — it becomes a talking point in the narrative.
+
+version: 1
+
+items:
+  - id: thesis
+    question: "What's the thesis in one sentence?"
+    source: conversation
+    required: true
+    rationale: >
+      A trade without a nameable thesis is a reaction. If the user
+      cannot state what is supposed to happen, the most useful
+      thing is to ask.
+
+  - id: invalidation
+    question: "Where does this thesis become wrong?"
+    source: conversation
+    required: true
+    rationale: >
+      The stop price is the concrete answer. If invalidation is not
+      defined, the trade has no exit criteria — only a hope.
+
+  - id: rr
+    question: "Is R:R at least 1.5?"
+    source: pretrade-risk.output
+    required: false
+    rationale: >
+      Targets below 1.5R require higher win rates. Not a hard gate,
+      but flag at 1.0R and below.
+
+  - id: size_vs_budget
+    question: "Is dollar risk within the daily loss budget?"
+    source: pretrade-risk.output, risk_settings.dailyLossAutoLiq
+    required: true
+    rationale: >
+      Covered by pretrade-risk's `exceeds_daily_loss_budget` flag.
+      Coach surfaces it and does not re-check.
+
+  - id: correlated_exposure
+    question: "Are you already exposed to the same risk elsewhere?"
+    source: my_portfolio.positions
+    required: false
+    rationale: >
+      Long ES and long NQ at the same time is one trade, not two.
+      Check against current `netPos` on product-family correlates
+      (see correlation-hedge skill for the reference map).
+
+  - id: hour_of_day
+    question: "Is this in your historical-edge hours?"
+    source: detect.py hour_edge flag
+    required: false
+    rationale: >
+      `detect.py` flags hours where historical win rate is below
+      cutoff with enough samples. Not a block — some trades make
+      sense outside edge hours (event-driven, breakout retest).
+
+  - id: emotional_state
+    question: "How are you feeling right now — focused, frustrated, fomo?"
+    source: conversation
+    required: false
+    rationale: >
+      Subjective but the only signal for pre-loss emotional state.
+      If `detect.py` flags `revenge_trade` or `losing_streak`,
+      this becomes required.
+
+  - id: session_state
+    question: "Is today's P&L already past ±50% of the daily budget?"
+    source: detect.py summary.pnl_today_usd, risk_settings.dailyLossAutoLiq
+    required: false
+    rationale: >
+      Well-profitable days warrant a different stance than neutral
+      — consider taking off the last trade or reducing size.
+
+# Narrative construction: when the user asks "should I take this?", read this
+# checklist, walk through items, and combine with any flags from detect.py.
+# Format: checklist findings → flags → plain-English summary.

@@ -1,0 +1,6 @@
+{
+  "snapshots": [
+    {"symbol": "ESU6", "lastPrice": 7158.25, "tickSize": 0.25, "valuePerPoint": 50},
+    {"symbol": "NQU6", "lastPrice": 18260.0, "tickSize": 0.25, "valuePerPoint": 20}
+  ]
+}

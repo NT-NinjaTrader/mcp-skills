@@ -1,0 +1,6 @@
+{
+  "account": "DEMO-123",
+  "dailyLossAutoLiq": -500.0,
+  "totalUsedMargin": 53200.0,
+  "maxNetLiq": 100000.0
+}

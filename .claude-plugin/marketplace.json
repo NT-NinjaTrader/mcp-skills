@@ -1,0 +1,57 @@
+{
+  "name": "mcp-skills",
+  "owner": {
+    "name": "NinjaTrader",
+    "email": "support@ninjatrader.com"
+  },
+  "metadata": {
+    "description": "Trading skills for the NinjaTrader MCP server.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "ninjatrader",
+      "displayName": "NinjaTrader",
+      "description": "Trading skills for the NinjaTrader MCP: market-structure analytics, pre-trade sizing, live position health, trade replay, coaching debriefs, alert composition, correlation-based hedging, event watch, and charting.",
+      "source": "./",
+      "version": "0.1.0",
+      "author": {
+        "name": "NinjaTrader",
+        "email": "support@ninjatrader.com"
+      },
+      "homepage": "https://github.com/NT-NinjaTrader/mcp-skills",
+      "repository": "https://github.com/NT-NinjaTrader/mcp-skills",
+      "keywords": [
+        "mcp",
+        "trading",
+        "futures",
+        "ninjatrader",
+        "tradovate",
+        "skills"
+      ],
+      "category": "finance",
+      "strict": true,
+      "mcpServers": {
+        "ninjatrader-demo": {
+          "type": "http",
+          "url": "https://mcp-demo.tradovateapi.com/mcp"
+        }
+      },
+      "skills": [
+        "./skills/alerts-composer",
+        "./skills/chart-render",
+        "./skills/contract-intel",
+        "./skills/correlation-hedge",
+        "./skills/event-watch",
+        "./skills/market-context",
+        "./skills/position-watchdog",
+        "./skills/pretrade-risk",
+        "./skills/risk-coach",
+        "./skills/scale-manager",
+        "./skills/trade-debrief",
+        "./skills/trade-journal",
+        "./skills/trade-replay"
+      ]
+    }
+  ]
+}

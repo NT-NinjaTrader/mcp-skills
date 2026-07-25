@@ -1,0 +1,78 @@
+{
+  "symbol": "ESM6",
+  "barType": "Minute",
+  "barSize": 5,
+  "bars": [
+    {
+      "timestamp": "2026-04-19T14:00:00Z",
+      "open": 7150.00,
+      "high": 7152.00,
+      "low": 7148.75,
+      "close": 7151.25,
+      "upVolume": 8400,
+      "downVolume": 3100,
+      "histogram": [
+        {"price": -5, "bid": 20, "offer": 15},
+        {"price": -3, "bid": 40, "offer": 35},
+        {"price": -1, "bid": 80, "offer": 90},
+        {"price":  0, "bid": 200, "offer": 210},
+        {"price":  1, "bid": 180, "offer": 220},
+        {"price":  3, "bid": 110, "offer": 140},
+        {"price":  5, "bid": 60, "offer": 80},
+        {"price":  8, "bid": 10, "offer": 20}
+      ]
+    },
+    {
+      "timestamp": "2026-04-19T14:05:00Z",
+      "open": 7151.25,
+      "high": 7153.50,
+      "low": 7151.00,
+      "close": 7153.00,
+      "upVolume": 6200,
+      "downVolume": 2400,
+      "histogram": [
+        {"price": -1, "bid": 30, "offer": 20},
+        {"price":  0, "bid": 150, "offer": 180},
+        {"price":  2, "bid": 220, "offer": 260},
+        {"price":  4, "bid": 140, "offer": 200},
+        {"price":  7, "bid": 50, "offer": 80},
+        {"price":  9, "bid": 10, "offer": 15}
+      ]
+    },
+    {
+      "timestamp": "2026-04-19T14:10:00Z",
+      "open": 7153.00,
+      "high": 7154.25,
+      "low": 7150.50,
+      "close": 7150.75,
+      "upVolume": 3100,
+      "downVolume": 5800,
+      "histogram": [
+        {"price": -10, "bid": 40, "offer": 20},
+        {"price":  -7, "bid": 80, "offer": 40},
+        {"price":  -4, "bid": 160, "offer": 100},
+        {"price":  -2, "bid": 200, "offer": 150},
+        {"price":   0, "bid": 180, "offer": 200},
+        {"price":   3, "bid": 60, "offer": 70},
+        {"price":   5, "bid": 20, "offer": 30}
+      ]
+    },
+    {
+      "timestamp": "2026-04-19T14:15:00Z",
+      "open": 7150.75,
+      "high": 7151.75,
+      "low": 7149.00,
+      "close": 7149.25,
+      "upVolume": 2400,
+      "downVolume": 4100,
+      "histogram": [
+        {"price": -7, "bid": 60, "offer": 30},
+        {"price": -4, "bid": 140, "offer": 80},
+        {"price": -2, "bid": 180, "offer": 110},
+        {"price":  0, "bid": 120, "offer": 130},
+        {"price":  2, "bid": 70, "offer": 90},
+        {"price":  4, "bid": 20, "offer": 30}
+      ]
+    }
+  ]
+}

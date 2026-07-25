@@ -1,0 +1,50 @@
+{
+  "name": "ninjatrader",
+  "version": "0.1.0",
+  "description": "Trading skills for the NinjaTrader MCP: market-structure analytics, pre-trade sizing, live position health, trade replay, coaching debriefs, alert composition, correlation-based hedging, event watch, and charting.",
+  "author": {
+    "name": "NinjaTrader",
+    "email": "support@ninjatrader.com"
+  },
+  "homepage": "https://github.com/NT-NinjaTrader/mcp-skills",
+  "repository": "https://github.com/NT-NinjaTrader/mcp-skills",
+  "keywords": [
+    "mcp",
+    "trading",
+    "futures",
+    "ninjatrader",
+    "tradovate",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "mcpServers": {
+    "ninjatrader-demo": {
+      "type": "http",
+      "url": "https://mcp-demo.tradovateapi.com/mcp"
+    }
+  },
+  "interface": {
+    "displayName": "NinjaTrader",
+    "shortDescription": "Trading skills for the NinjaTrader MCP server",
+    "longDescription": "Trading skills for the NinjaTrader MCP: market-structure analytics, pre-trade sizing, live position health, trade replay, coaching debriefs, alert composition, correlation-based hedging, event watch, and charting.",
+    "developerName": "NinjaTrader",
+    "category": "Finance",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://ninjatrader.com/",
+    "privacyPolicyURL": "https://ninjatrader.com/privacy-policy-platform/",
+    "termsOfServiceURL": "https://ninjatrader.com/downloads/TermsOfServiceAgreement.pdf",
+    "defaultPrompt": [
+      "How is my portfolio doing?",
+      "What's on the economic calendar this week?",
+      "Size a trade on MNQ with a 30-point stop and a $200 risk budget."
+    ],
+    "brandColor": "#ff4200",
+    "logo": "./assets/logo.svg",
+    "composerIcon": "./assets/icon.svg",
+    "screenshots": []
+  }
+}

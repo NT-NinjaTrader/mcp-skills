@@ -1,0 +1,15 @@
+{
+  "position": {
+    "symbol": "ESU6",
+    "direction": "long",
+    "qty": 4,
+    "price": 7150.0,
+    "value_per_point": 50.0
+  },
+  "hedge_candidate": {
+    "symbol": "NQU6",
+    "price": 22450.0,
+    "value_per_point": 20.0,
+    "beta": 0.93
+  }
+}

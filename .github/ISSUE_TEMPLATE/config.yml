@@ -1,0 +1,16 @@
+# A blank issue routes around the templates, so it stays disabled.
+# Every report starts from a template, or from a contact link below.
+blank_issues_enabled: false
+contact_links:
+  - name: Account, login, funding, platform, or order help
+    url: https://ninjatrader.com/support/
+    about: >-
+      Contact NinjaTrader support for a question about your account, your
+      login, funding or billing, the trading platform, or an order fill.
+      A GitHub issue cannot reach your account, so support is the only
+      channel that can answer these.
+  - name: Report a security vulnerability
+    url: https://github.com/NT-NinjaTrader/mcp-skills/security/advisories/new
+    about: >-
+      Report a security vulnerability through GitHub private vulnerability
+      reporting. Do not open a public issue for a security report.

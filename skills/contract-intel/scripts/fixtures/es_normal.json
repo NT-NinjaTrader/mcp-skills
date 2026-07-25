@@ -1,0 +1,7 @@
+{
+  "snapshots": [
+    {"symbol": "ESU6", "openInterest": 2100000, "expirationDate": "2026-09-18", "tickSize": 0.25, "valuePerPoint": 50, "initialMargin": 13200},
+    {"symbol": "ESZ6", "openInterest":  180000, "expirationDate": "2026-12-18", "tickSize": 0.25, "valuePerPoint": 50, "initialMargin": 13200},
+    {"symbol": "ESH7", "openInterest":   12000, "expirationDate": "2027-03-19", "tickSize": 0.25, "valuePerPoint": 50, "initialMargin": 13200}
+  ]
+}
