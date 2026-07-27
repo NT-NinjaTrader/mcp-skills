@@ -53,6 +53,14 @@ Run all Python tooling through `uv`. Use `uvx`, `uv run`, or `uv pip`. Do not ca
 
 We review every pull request here. When we accept a change, it reaches the next published release, and you keep the credit as the author. The maintainers apply an accepted change through their own release process. A release may not carry your commit as you wrote it. We say so in the pull request when that happens.
 
+## License
+
+The Apache License 2.0 covers this repository. [`LICENSE`](LICENSE) holds the text.
+
+Your contribution takes the same license. Section 5 of the license states this rule. You open a pull request, and you license that work under Apache 2.0. We ask for no separate contributor agreement.
+
+You keep the copyright on your own work. The license grants the rights that it states to us and to every other user.
+
 ## What we do not accept
 
 - A change that lets a skill place, modify, or cancel an order without your
