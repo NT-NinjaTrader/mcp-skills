@@ -1,6 +1,6 @@
 {
   "name": "ninjatrader",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Trading skills for the NinjaTrader MCP: market-structure analytics, pre-trade sizing, live position health, trade replay, coaching debriefs, alert composition, correlation-based hedging, event watch, and charting.",
   "author": {
     "name": "NinjaTrader",
@@ -8,6 +8,7 @@
   },
   "homepage": "https://github.com/NT-NinjaTrader/mcp-skills",
   "repository": "https://github.com/NT-NinjaTrader/mcp-skills",
+  "license": "Apache-2.0",
   "keywords": [
     "mcp",
     "trading",

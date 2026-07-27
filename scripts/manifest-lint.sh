@@ -267,7 +267,11 @@ compare("author", [
     at(CURSOR, "author"),
 ])
 
-for field in ("homepage", "repository"):
+# All four plugin schemas name a top-level license key, and each takes an
+# SPDX identifier. mcp.json is a server config, not a plugin manifest, so
+# it holds no license key and this list omits it. The compare runs without
+# skip_absent, so a manifest that drops the key fails against (absent).
+for field in ("homepage", "repository", "license"):
     compare(field, [
         at(CLAUDE, field),
         at(MARKET, "plugins", 0, field),

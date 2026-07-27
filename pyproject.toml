@@ -8,6 +8,12 @@ name = "mcp-skills"
 version = "0.0.0"
 description = "Python quality tooling config for the NinjaTrader MCP trading skills."
 requires-python = ">=3.10"
+# This table declares no `license` key on purpose, for the same reason it
+# pins the version at 0.0.0. The repository licenses under Apache 2.0, and
+# `LICENSE` holds the text. This file builds no wheel, so PEP 621 license
+# metadata reaches no consumer. A key here would add a fifth copy of the
+# SPDX identifier, and `scripts/manifest-lint.sh` gates only the four
+# client manifests. Read `LICENSE` for the license.
 
 [tool.ruff]
 line-length = 100

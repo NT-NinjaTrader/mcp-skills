@@ -103,3 +103,9 @@ Open an issue from a [template](https://github.com/NT-NinjaTrader/mcp-skills/iss
 
 > [!WARNING]
 > Never post an account number, an order ID, or fill detail in a public issue. For account, login, funding, or order help, contact [NinjaTrader support](https://ninjatrader.com/support/) instead, because a GitHub issue can't reach your account.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE). You can use, modify, and redistribute these skills, including commercially, as long as you keep the license and copyright notice and state the changes you made.
+
+The license covers what's in this repository: the skill definitions, their bundled scripts, and the docs. It grants no access to the NinjaTrader MCP server or to any trading account — the [NinjaTrader Terms of Service](https://ninjatrader.com/downloads/TermsOfServiceAgreement.pdf) governs those.
