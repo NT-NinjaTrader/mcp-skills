@@ -36,6 +36,10 @@
         "ninjatrader-demo": {
           "type": "http",
           "url": "https://mcp-demo.tradovateapi.com/mcp"
+        },
+        "ninjatrader-live": {
+          "type": "http",
+          "url": "https://mcp-live.tradovateapi.com/mcp"
         }
       },
       "skills": [
