@@ -7,7 +7,7 @@ Full documentation lives at [`docs.ninjatrader.com/mcp`](https://docs.ninjatrade
 ![Sample chart output. ES 5m with VWAP, Buy and Sell fills, stop and target levels](assets/sample-chart.png)
 
 > [!IMPORTANT]
-> This beta connects to the demo server only, so nothing here reaches a live account. The skills propose orders and never submit them, and you approve every payload. See [Safety and disclosures](https://docs.ninjatrader.com/mcp/safety).
+> This beta runs on two separate servers: Demo, which trades simulated money, and Live, which trades real money. Start on Demo. The skills propose orders and never submit them, and you approve every payload. See [Safety and disclosures](https://docs.ninjatrader.com/mcp/safety).
 
 ## Skills
 
@@ -48,6 +48,8 @@ codex plugin add ninjatrader@mcp-skills
 codex mcp login ninjatrader-demo
 ```
 
+Log in to `ninjatrader-live` instead to trade a live account. The plugin bundles both servers.
+
 ### Skills CLI
 
 ```bash
@@ -55,9 +57,10 @@ npx skills add NT-NinjaTrader/mcp-skills
 ```
 
 > [!NOTE]
-> The skills CLI installs the skills only, and it doesn't register the MCP server. Register it separately:
+> The skills CLI installs the skills only, and it doesn't register the MCP server. Register the server you want:
 > ```bash
 > claude mcp add --transport http ninjatrader-demo https://mcp-demo.tradovateapi.com/mcp
+> claude mcp add --transport http ninjatrader-live https://mcp-live.tradovateapi.com/mcp
 > ```
 > The first tool call opens the OAuth flow. Full instructions for every client, including Claude Desktop and ChatGPT, are in [Connect Your AI Agent](https://docs.ninjatrader.com/mcp/connect).
 
@@ -67,7 +70,7 @@ The marketplace listing awaits review. Meanwhile, add the server from this repo'
 
 ## Prerequisites
 
-- A Tradovate or NinjaTrader account with demo access.
+- A Tradovate or NinjaTrader account with demo or live access.
 - Python 3.10+, used by the analytics scripts the skills run.
 - `matplotlib`, only for `chart-render`. The script declares it inline, so `uv run` installs it for you.
 

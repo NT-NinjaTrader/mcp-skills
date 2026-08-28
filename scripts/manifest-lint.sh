@@ -300,7 +300,7 @@ def servers(path):
 
 
 key_entries = []
-url_entries = []
+url_by_name = {}
 for path in SERVER_MANIFESTS:
     label, block = servers(path)
     if not isinstance(block, dict):
@@ -310,13 +310,16 @@ for path in SERVER_MANIFESTS:
     for name in sorted(block.keys()):
         value = block[name]
         url = value.get("url", MISSING) if isinstance(value, dict) else MISSING
-        url_entries.append((label + "[" + name + "].url", url))
+        url_by_name.setdefault(name, []).append(
+            (label + "[" + name + "].url", url))
 
-# The server-registration name. A client builds the qualified tool name
-# from this key, so a drift breaks every tool reference in the skills.
+# The server-registration names. A client builds the qualified tool name
+# from these keys, so a drift breaks every tool reference in the skills.
 compare("mcpServers key", key_entries)
-# The endpoint. All four files must name the same server.
-compare("mcpServers url", url_entries)
+# The endpoint of each server. Every manifest must name the same URL for a
+# given server. Distinct servers differ, so compare within one name only.
+for name in sorted(url_by_name):
+    compare("mcpServers url", url_by_name[name])
 
 # The skills array. The two Claude manifests must agree with each other
 # and with the directories on disk. Claude Code refuses to load the
