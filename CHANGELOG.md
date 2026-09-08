@@ -4,6 +4,36 @@ Every release of the NinjaTrader trading skills appears here. The version in thi
 
 Claude Code keys its update cache on the plugin version. A release therefore always moves the version, or an installed copy never receives the change.
 
+## 0.3.1
+
+### Documentation
+
+- add Claude Desktop plugin install steps
+
+## 0.3.0
+
+### Features
+
+- multi-environment MCP debug toolkit
+
+### Fixes
+
+- drop the pull-request number from an entry
+- patch npm security advisories
+- default mcp-debug authorize to open a browser
+
+### Documentation
+
+- add the live MCP server to the skills package
+
+### Build
+
+- bump astral-sh/setup-uv from 9.0.0 to 10.0.1
+
+### Continuous integration
+
+- add Claude PR review workflow and REVIEW.md
+
 ## 0.2.0
 
 ### Features

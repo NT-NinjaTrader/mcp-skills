@@ -40,6 +40,19 @@ Each skill's `SKILL.md` documents its trigger phrases, the MCP tools it calls, a
 
 The plugin bundles the MCP server connection, so authorize it on first use. Confirm with `/plugin list`.
 
+### Claude Desktop
+
+Add the marketplace first, then install the plugin from it:
+
+1. Open **Customize** in the left sidebar, then select the **Plugins** tab.
+2. Select **Add > Add marketplace**, then add the repository `https://github.com/NT-NinjaTrader/mcp-skills`.
+3. Select **Browse**, find `ninjatrader`, then select **Install**.
+4. Start a new chat. All 13 skills load with the plugin.
+
+Plugins need a paid Claude plan. For Cowork, open the **Cowork** tab before you open **Customize**.
+
+The plugin declares the Demo MCP server. If Claude Desktop doesn't pick the server up, add `https://mcp-demo.tradovateapi.com/mcp` as a custom connector under **Settings > Connectors**.
+
 ### Codex
 
 ```
